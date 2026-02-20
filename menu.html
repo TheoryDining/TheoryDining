@@ -9,7 +9,7 @@
 * { margin:0; padding:0; box-sizing:border-box; }
 body { background:#FAF7F2; font-family:'DM Sans',sans-serif; color:#1A1410; }
 
-/* In-app browser banner — shown when FB/WA/Instagram opens this file */
+/* In-app browser banner â shown when FB/WA/Instagram opens this file */
 #open-banner {
   display:none;
   position:fixed; top:0; left:0; right:0; z-index:9999;
@@ -150,42 +150,97 @@ main { max-width:900px; margin:0 auto; padding:24px 16px 200px; }
 
 <script>
 // =============================================================================
-// MENU DATA — update via admin-upload.html
+// MENU DATA â update via admin-upload.html
 // =============================================================================
 var MENU_DATA = {
-  "restaurantName": "Theory Dining",
+  "restaurantName": "The Grand Table",
   "minimumPerGuest": 60,
   "categories": [
-    { "name": "Starters", "items": [
-      { "id": 1,  "name": "Burrata & Heirloom Tomato",   "desc": "Fresh burrata, heritage tomatoes, basil oil, sea salt",  "price": 18 },
-      { "id": 2,  "name": "Beef Carpaccio",               "desc": "Thinly sliced beef, capers, parmesan, lemon aioli",      "price": 22 },
-      { "id": 3,  "name": "Seasonal Soup",                "desc": "Chef's daily creation, artisan bread",                   "price": 14 },
-      { "id": 4,  "name": "Shrimp Cocktail",              "desc": "Chilled jumbo shrimp, horseradish cocktail sauce",        "price": 24 }
-    ]},
-    { "name": "Salads", "items": [
-      { "id": 5,  "name": "Classic Caesar",               "desc": "Romaine, house dressing, parmesan crisp, anchovy",       "price": 16 },
-      { "id": 6,  "name": "Roasted Beet & Goat Cheese",   "desc": "Candied walnuts, arugula, sherry vinaigrette",           "price": 17 },
-      { "id": 7,  "name": "Market Green Salad",           "desc": "Seasonal greens, radish, cucumber, herb vinaigrette",    "price": 14 }
-    ]},
-    { "name": "Main Courses", "items": [
-      { "id": 8,  "name": "Grilled Prime Ribeye 12oz",    "desc": "Dry-aged, truffle butter, roasted garlic jus",           "price": 68 },
-      { "id": 9,  "name": "Pan-Seared Sea Bass",          "desc": "Lemon beurre blanc, caperberries, fennel salad",         "price": 52 },
-      { "id": 10, "name": "Duck Confit",                  "desc": "Braised lentils, cherry reduction, crispy skin",         "price": 48 },
-      { "id": 11, "name": "Vegetable Wellington",         "desc": "Seasonal roasted vegetables, puff pastry, mushroom duxelles", "price": 38 },
-      { "id": 12, "name": "Lamb Rack (half)",             "desc": "Herb crust, Dijon, minted pea puree, lamb jus",          "price": 62 }
-    ]},
-    { "name": "Sides", "items": [
-      { "id": 13, "name": "Truffle Frites",               "desc": "House-cut, parmesan, fresh herbs",                       "price": 12 },
-      { "id": 14, "name": "Roasted Seasonal Vegetables",  "desc": "Market selection, herb oil",                             "price": 11 },
-      { "id": 15, "name": "Creamy Mashed Potato",         "desc": "Butter, creme fraiche, chives",                         "price": 10 },
-      { "id": 16, "name": "Sauteed Haricots Verts",       "desc": "Toasted almonds, lemon zest",                           "price": 10 }
-    ]},
-    { "name": "Desserts", "items": [
-      { "id": 17, "name": "Chocolate Fondant",            "desc": "Warm dark chocolate, vanilla bean ice cream",            "price": 14 },
-      { "id": 18, "name": "Creme Brulee",                 "desc": "Classic vanilla, caramelized sugar crust",               "price": 12 },
-      { "id": 19, "name": "Cheese Board (3 selections)",  "desc": "Seasonal cheeses, honey, crackers, dried fruits",        "price": 22 },
-      { "id": 20, "name": "Seasonal Sorbet (3 scoops)",   "desc": "Ask your server for today's flavors",                   "price": 10 }
-    ]}
+    {
+      "name": "ცივი",
+      "items": [
+        {
+          "id": 1,
+          "name": "სალათი",
+          "desc": "კიტრი / პომიდორი",
+          "price": 20
+        },
+        {
+          "id": 4,
+          "name": "ცეზარი",
+          "desc": "",
+          "price": 29
+        },
+        {
+          "id": 7,
+          "name": "ბაჟე",
+          "desc": "",
+          "price": 38
+        }
+      ]
+    },
+    {
+      "name": "ცხელი",
+      "items": [
+        {
+          "id": 2,
+          "name": "ოსტრი",
+          "desc": "საქონლის ხორცი",
+          "price": 23
+        },
+        {
+          "id": 3,
+          "name": "ქაბაბი",
+          "desc": "ქათმის",
+          "price": 26
+        }
+      ]
+    },
+    {
+      "name": "ცომეული",
+      "items": [
+        {
+          "id": 5,
+          "name": "ხაჭაპური",
+          "desc": "ყველით",
+          "price": 32
+        },
+        {
+          "id": 6,
+          "name": "ლობიანი",
+          "desc": "ლორით",
+          "price": 35
+        }
+      ]
+    },
+    {
+      "name": "მთავარი",
+      "items": [
+        {
+          "id": 8,
+          "name": "სტეიკი",
+          "desc": "რიბაი",
+          "price": 41
+        }
+      ]
+    },
+    {
+      "name": "სასმელი",
+      "items": [
+        {
+          "id": 9,
+          "name": "ღვინო",
+          "desc": "თეთრი",
+          "price": 44
+        },
+        {
+          "id": 10,
+          "name": "კოკა კოლა",
+          "desc": "ზერო",
+          "price": 47
+        }
+      ]
+    }
   ]
 };
 // =============================================================================
@@ -215,7 +270,7 @@ function isInAppBrowser() {
   return /FBAN|FBAV|Instagram|Twitter|LinkedInApp|Snapchat|MicroMessenger|Line\/|WhatsApp/.test(ua);
 }
 
-// Session state — silently ignored if storage is blocked
+// Session state â silently ignored if storage is blocked
 var _state = { q: {}, n: '', g: '2' };
 function saveState() {
   try {
@@ -235,7 +290,7 @@ function loadState() {
 
 // =============================================================================
 // BUILD MENU
-// All card layout set via JS .style — zero CSS class dependency for display.
+// All card layout set via JS .style â zero CSS class dependency for display.
 // Immune to any @media print bleed or WebView CSS restrictions.
 // =============================================================================
 function buildMenu() {
@@ -270,7 +325,7 @@ function buildMenu() {
       var rq = parseInt(sq[item.id]) || 0;
       qty[item.id] = rq;
 
-      // CARD — display:table so it works on every WebView without flex/grid
+      // CARD â display:table so it works on every WebView without flex/grid
       var card = document.createElement('div');
       card.id = 'c-' + item.id;
       card.style.cssText = 'display:table;width:100%;box-sizing:border-box;background:' + (rq > 0 ? '#FFFCF4' : '#fff') + ';border:1px solid ' + (rq > 0 ? '#C8952A' : '#E2D9CC') + ';border-radius:10px;padding:13px 14px;margin-bottom:10px;';
@@ -335,7 +390,7 @@ function buildMenu() {
   if (saved.n) { var gn2 = gel('guest-name'); if (gn2) gn2.value = saved.n; }
   if (saved.g) { var gc2 = gel('guest-count'); if (gc2) gc2.value = saved.g; }
 
-  // Delegated listeners on the wrap — one handler for all +/- buttons and inputs
+  // Delegated listeners on the wrap â one handler for all +/- buttons and inputs
   wrap.addEventListener('click', function(e) {
     var el = e.target || e.srcElement;
     while (el && el !== wrap) {
@@ -406,7 +461,7 @@ function updateFooter() {
   else if (!name)         { msg.textContent = 'Please enter your name';           msg.className = 'val-msg warn'; btn.disabled = true; }
   else if (guests === 0)  { msg.textContent = 'Please enter number of guests';   msg.className = 'val-msg warn'; btn.disabled = true; }
   else if (t.sub < min)  { msg.textContent = 'Add ' + fmt(min-t.sub) + ' more (min ' + fmt(min) + ')'; msg.className = 'val-msg warn'; btn.disabled = true; }
-  else                   { msg.textContent = 'Ready — tap to view order';        msg.className = 'val-msg ok';   btn.disabled = false; }
+  else                   { msg.textContent = 'Ready â tap to view order';        msg.className = 'val-msg ok';   btn.disabled = false; }
 }
 
 function buildRows() {
@@ -436,14 +491,14 @@ function buildOverlayHTML(guestName, guests, dt, t, rows) {
 
 function buildDesktopPage(guestName, guests, dt, t, rows) {
   var css = '*{margin:0;padding:0;box-sizing:border-box;}body{font-family:Georgia,serif;color:#1A1410;background:#FAF7F2;}.page{background:#fff;max-width:700px;margin:28px auto;border-radius:12px;overflow:hidden;box-shadow:0 6px 32px rgba(0,0,0,.1);}.toolbar{background:#1A1410;padding:12px 22px;display:flex;align-items:center;justify-content:space-between;gap:10px;}.toolbar span{color:#aaa;font-size:.75rem;letter-spacing:.05em;text-transform:uppercase;}.tb-btn{background:#C8952A;color:#fff;border:none;padding:8px 18px;border-radius:6px;font-family:Georgia,serif;font-size:.85rem;cursor:pointer;}.receipt{padding:28px 32px;}h1{font-size:24px;letter-spacing:.03em;}.tag{font-size:8px;text-transform:uppercase;letter-spacing:.14em;color:#8B7355;margin-top:2px;margin-bottom:12px;}hr{border:none;border-top:2px solid #C8952A;margin-bottom:14px;}.meta{display:flex;justify-content:space-between;margin-bottom:14px;font-size:11px;color:#555;}.gn{font-size:15px;font-weight:bold;color:#1A1410;margin-bottom:2px;}.rt{text-align:right;line-height:1.7;}table{width:100%;border-collapse:collapse;margin-bottom:14px;}thead tr{background:#1A1410;}thead th{color:#E8B84B;padding:6px 9px;font-size:8.5px;text-transform:uppercase;letter-spacing:.06em;font-weight:normal;text-align:left;}thead th.r{text-align:right;}tbody tr{border-bottom:1px solid #eee;}tbody tr:nth-child(even){background:#FAF7F2;}tbody td{padding:6px 9px;font-size:11px;}.ch td{background:#F5EFE6;color:#6B4C35;font-weight:bold;font-size:8.5px;text-transform:uppercase;letter-spacing:.05em;padding:4px 9px;border-top:2px solid #E2D9CC;}.r{text-align:right;}.tw{text-align:right;margin-bottom:18px;}.tt{display:inline-table;border-collapse:collapse;min-width:220px;}.tt td{padding:4px 9px;font-size:11px;}.tt .lb{color:#555;}.tt .vl{text-align:right;}.tt .sl td{border-top:1px solid #ddd;color:#555;}.tt .gl td{border-top:2px solid #C8952A;font-size:14px;font-weight:bold;padding-top:7px;}.foot{border-top:1px solid #E2D9CC;padding-top:9px;text-align:center;font-size:9px;color:#8B7355;line-height:1.9;}@media print{*{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;}body{background:#fff;}.page{margin:0;border-radius:0;box-shadow:none;}.toolbar{display:none;}@page{margin:10mm;size:A4;}}';
-  return '<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>' + MENU_DATA.restaurantName + ' - Order</title><style>' + css + '</style></head><body><div class="page"><div class="toolbar"><span>Order — ' + guestName + '</span><button class="tb-btn" onclick="window.print()">Print / Save as PDF</button></div><div class="receipt"><h1>' + MENU_DATA.restaurantName + '</h1><div class="tag">Pre-Order Summary</div><hr><div class="meta"><div><div class="gn">' + guestName + '</div><div>' + guests + ' guest' + (parseInt(guests)!==1?'s':'') + '</div></div><div class="rt">' + dt.date + '<br>' + dt.time + '</div></div><table><thead><tr><th>Item</th><th class="r">Qty</th><th class="r">Price</th><th class="r">Total</th></tr></thead><tbody>' + rows + '</tbody></table><div class="tw"><table class="tt"><tr><td class="lb">Subtotal</td><td class="vl">' + fmt(t.sub) + '</td></tr><tr class="sl"><td class="lb">Service Charge 10%</td><td class="vl">' + fmt(t.svc) + '</td></tr><tr class="gl"><td class="lb">Grand Total</td><td class="vl">' + fmt(t.grand) + '</td></tr></table></div><div class="foot">Prices Include VAT 18%<br>Theory Dining: 23 Pushkin St. Tbilisi &nbsp;|&nbsp; 595-88-88-23</div></div></div></body></html>';
+  return '<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>' + MENU_DATA.restaurantName + ' - Order</title><style>' + css + '</style></head><body><div class="page"><div class="toolbar"><span>Order â ' + guestName + '</span><button class="tb-btn" onclick="window.print()">Print / Save as PDF</button></div><div class="receipt"><h1>' + MENU_DATA.restaurantName + '</h1><div class="tag">Pre-Order Summary</div><hr><div class="meta"><div><div class="gn">' + guestName + '</div><div>' + guests + ' guest' + (parseInt(guests)!==1?'s':'') + '</div></div><div class="rt">' + dt.date + '<br>' + dt.time + '</div></div><table><thead><tr><th>Item</th><th class="r">Qty</th><th class="r">Price</th><th class="r">Total</th></tr></thead><tbody>' + rows + '</tbody></table><div class="tw"><table class="tt"><tr><td class="lb">Subtotal</td><td class="vl">' + fmt(t.sub) + '</td></tr><tr class="sl"><td class="lb">Service Charge 10%</td><td class="vl">' + fmt(t.svc) + '</td></tr><tr class="gl"><td class="lb">Grand Total</td><td class="vl">' + fmt(t.grand) + '</td></tr></table></div><div class="foot">Prices Include VAT 18%<br>Theory Dining: 23 Pushkin St. Tbilisi &nbsp;|&nbsp; 595-88-88-23</div></div></div></body></html>';
 }
 
 // =============================================================================
-// INIT — everything that touches the DOM goes here, called after DOM is ready
+// INIT â everything that touches the DOM goes here, called after DOM is ready
 // =============================================================================
 function init() {
-  // ── In-app browser detection & escape banner ──
+  // ââ In-app browser detection & escape banner ââ
   // When someone opens this file inside FB Messenger / WhatsApp on iOS,
   // those apps use a locked-down WebView. The banner tells the user to
   // open it in Safari instead. The safari-link uses the current URL so
