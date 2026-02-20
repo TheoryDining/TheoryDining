@@ -153,7 +153,7 @@ main { max-width:900px; margin:0 auto; padding:24px 16px 200px; }
 // MENU DATA â update via admin-upload.html
 // =============================================================================
 var MENU_DATA = {
-  "restaurantName": "Theory Dining",
+  "restaurantName": "The Grand Table",
   "minimumPerGuest": 60,
   "categories": [
     {
@@ -325,14 +325,14 @@ function buildMenu() {
       var rq = parseInt(sq[item.id]) || 0;
       qty[item.id] = rq;
 
-      // CARD â display:table so it works on every WebView without flex/grid
+      // CARD â table-layout:fixed means columns respect their widths strictly
       var card = document.createElement('div');
       card.id = 'c-' + item.id;
-      card.style.cssText = 'display:table;width:100%;box-sizing:border-box;background:' + (rq > 0 ? '#FFFCF4' : '#fff') + ';border:1px solid ' + (rq > 0 ? '#C8952A' : '#E2D9CC') + ';border-radius:10px;padding:13px 14px;margin-bottom:10px;';
+      card.style.cssText = 'display:table;table-layout:fixed;width:100%;box-sizing:border-box;background:' + (rq > 0 ? '#FFFCF4' : '#fff') + ';border:1px solid ' + (rq > 0 ? '#C8952A' : '#E2D9CC') + ';border-radius:10px;padding:13px 14px;margin-bottom:10px;';
 
-      // Name + desc cell
+      // Name + desc cell â takes all remaining space
       var c1 = document.createElement('div');
-      c1.style.cssText = 'display:table-cell;vertical-align:middle;padding-right:10px;';
+      c1.style.cssText = 'display:table-cell;vertical-align:middle;width:auto;padding-right:10px;overflow:hidden;';
       var nm = document.createElement('div');
       nm.style.cssText = 'font-weight:500;font-size:.95rem;color:#1A1410;';
       nm.textContent = item.name;
@@ -344,17 +344,17 @@ function buildMenu() {
         c1.appendChild(ds);
       }
 
-      // Price cell
+      // Price cell â fixed 48px, right-aligned, never shrinks
       var c2 = document.createElement('div');
-      c2.style.cssText = 'display:table-cell;vertical-align:middle;white-space:nowrap;padding-right:12px;font-family:\'Playfair Display\',Georgia,serif;font-size:.95rem;color:#6B4C35;text-align:right;width:44px;';
+      c2.style.cssText = 'display:table-cell;vertical-align:middle;white-space:nowrap;width:48px;min-width:48px;padding-right:14px;font-family:\'Playfair Display\',Georgia,serif;font-size:.95rem;color:#6B4C35;text-align:right;';
       c2.textContent = fmt(item.price);
 
-      // Qty cell
+      // Qty cell â fixed 110px so -/input/+ always same width
       var c3 = document.createElement('div');
-      c3.style.cssText = 'display:table-cell;vertical-align:middle;white-space:nowrap;padding-right:8px;';
+      c3.style.cssText = 'display:table-cell;vertical-align:middle;white-space:nowrap;width:110px;min-width:110px;padding-right:10px;text-align:center;';
 
-      var btnStyle = 'width:28px;height:28px;border:1px solid #E2D9CC;background:#fff;border-radius:50%;font-size:1.1rem;cursor:pointer;color:#6B4C35;vertical-align:middle;line-height:1;padding:0;-webkit-tap-highlight-color:transparent;touch-action:manipulation;';
-      var inpStyle = 'width:36px;text-align:center;padding:4px 2px;border:1px solid #E2D9CC;border-radius:6px;font-size:.88rem;font-family:inherit;background:#fff;vertical-align:middle;-webkit-appearance:none;margin:0 4px;';
+      var btnStyle = 'width:30px;height:30px;border:1px solid #E2D9CC;background:#fff;border-radius:50%;font-size:1.1rem;cursor:pointer;color:#6B4C35;vertical-align:middle;line-height:1;padding:0;-webkit-tap-highlight-color:transparent;touch-action:manipulation;display:inline-block;';
+      var inpStyle = 'width:34px;text-align:center;padding:4px 0;border:1px solid #E2D9CC;border-radius:6px;font-size:.88rem;font-family:inherit;background:#fff;vertical-align:middle;-webkit-appearance:none;margin:0 3px;';
 
       var bm = document.createElement('button');
       bm.type = 'button'; bm.textContent = '-';
@@ -374,10 +374,10 @@ function buildMenu() {
 
       c3.appendChild(bm); c3.appendChild(inp); c3.appendChild(bp);
 
-      // Total cell
+      // Total cell â fixed 54px, right-aligned
       var c4 = document.createElement('div');
       c4.id = 't-' + item.id;
-      c4.style.cssText = 'display:table-cell;vertical-align:middle;text-align:right;white-space:nowrap;width:52px;font-weight:' + (rq > 0 ? '600' : '400') + ';color:' + (rq > 0 ? '#C8952A' : '#8B7355') + ';';
+      c4.style.cssText = 'display:table-cell;vertical-align:middle;text-align:right;white-space:nowrap;width:54px;min-width:54px;font-weight:' + (rq > 0 ? '600' : '400') + ';color:' + (rq > 0 ? '#C8952A' : '#8B7355') + ';';
       c4.textContent = rq > 0 ? fmt(rq * item.price) : '-';
 
       card.appendChild(c1); card.appendChild(c2);
