@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Theory Dining</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:#FAF7F2; font-family:'DM Sans',sans-serif; color:#1A1410; }
+
+/* In-app browser banner — shown when FB/WA/Instagram opens this file */
+#open-banner {
+  display:none;
+  position:fixed; top:0; left:0; right:0; z-index:9999;
+  background:#1A1410; color:#fff;
+  padding:14px 18px;
+  text-align:center;
+  box-shadow:0 2px 12px rgba(0,0,0,.4);
+}
+#open-banner p { font-size:.85rem; color:#ccc; margin-bottom:8px; }
+#open-banner a {
+  display:inline-block;
+  background:#C8952A; color:#fff;
+  padding:10px 22px; border-radius:8px;
+  font-size:.9rem; font-weight:600;
+  text-decoration:none; letter-spacing:.02em;
+}
+#open-banner .tip { font-size:.72rem; color:#8B7355; margin-top:6px; }
+
+header { background:#1A1410; padding:22px 24px 18px; text-align:center; position:sticky; top:0; z-index:50; }
+header h1 { font-family:'Playfair Display',serif; font-size:1.8rem; color:#E8B84B; letter-spacing:.04em; }
+header p { color:#8B7355; font-size:.78rem; margin-top:3px; letter-spacing:.08em; text-transform:uppercase; }
+
+.info-bar { background:#FFFDF9; border-bottom:1px solid #E2D9CC; padding:14px 24px; display:-webkit-flex; display:flex; -webkit-align-items:flex-end; align-items:flex-end; gap:18px; -webkit-flex-wrap:wrap; flex-wrap:wrap; }
+.info-field { display:-webkit-flex; display:flex; -webkit-flex-direction:column; flex-direction:column; gap:4px; }
+.info-field label { font-size:.7rem; text-transform:uppercase; letter-spacing:.07em; color:#8B7355; font-weight:500; }
+.info-field input { padding:8px 10px; border:2px solid #E2D9CC; border-radius:6px; font-size:.93rem; font-family:'DM Sans',sans-serif; background:#fff; color:#1A1410; -webkit-appearance:none; width:180px; }
+.info-field input.narrow { width:68px; }
+.info-field input:focus { outline:none; border-color:#C8952A; }
+.min-note { font-size:.75rem; color:#8B7355; padding-bottom:8px; }
+main { max-width:900px; margin:0 auto; padding:24px 16px 200px; }
+
+.footer-bar { position:fixed; bottom:0; left:0; right:0; background:#1A1410; color:#fff; padding:12px 24px; display:-webkit-flex; display:flex; -webkit-align-items:center; align-items:center; -webkit-justify-content:space-between; justify-content:space-between; -webkit-flex-wrap:wrap; flex-wrap:wrap; gap:8px; z-index:100; box-shadow:0 -4px 20px rgba(0,0,0,.3); }
+.totals-col { display:-webkit-flex; display:flex; -webkit-flex-direction:column; flex-direction:column; gap:2px; min-width:140px; }
+.trow { display:-webkit-flex; display:flex; -webkit-justify-content:space-between; justify-content:space-between; gap:20px; font-size:.78rem; color:#aaa; }
+.trow.sub { color:#ccc; }
+.trow.svc { color:#aaa; border-top:1px solid #333; padding-top:3px; margin-top:2px; }
+.trow.grand { color:#E8B84B; font-family:'Playfair Display',serif; font-size:1.05rem; font-weight:600; border-top:1px solid #444; padding-top:4px; margin-top:3px; }
+.trow span:last-child { text-align:right; }
+.item-ct { font-size:.7rem; color:#8B7355; margin-top:2px; }
+.val-block { text-align:center; -webkit-flex:1; flex:1; padding:0 6px; }
+.val-msg { font-size:.8rem; padding:6px 12px; border-radius:6px; display:inline-block; color:#8B7355; }
+.val-msg.ok { background:rgba(46,125,82,.2); color:#7EDDA5; border:1px solid rgba(46,125,82,.4); }
+.val-msg.warn { background:rgba(192,57,43,.2); color:#F1948A; border:1px solid rgba(192,57,43,.4); }
+.confirm-btn { background:#C8952A; color:#fff; border:none; padding:12px 20px; border-radius:8px; font-family:'DM Sans',sans-serif; font-size:.88rem; font-weight:500; cursor:pointer; white-space:nowrap; -webkit-tap-highlight-color:transparent; }
+.confirm-btn:disabled { background:#555; }
+
+#overlay { display:none; position:fixed; top:0; left:0; right:0; bottom:0; z-index:200; background:rgba(0,0,0,.55); overflow-y:auto; -webkit-overflow-scrolling:touch; }
+#overlay.show { display:block; }
+#ov-panel { background:#fff; margin:12px; border-radius:12px; overflow:hidden; }
+#ov-bar { background:#1A1410; padding:12px 16px; display:-webkit-flex; display:flex; -webkit-align-items:center; align-items:center; -webkit-justify-content:space-between; justify-content:space-between; gap:8px; -webkit-flex-wrap:wrap; flex-wrap:wrap; }
+#ov-bar span { color:#aaa; font-size:.75rem; text-transform:uppercase; letter-spacing:.05em; }
+.ov-btn { border:none; padding:8px 16px; border-radius:6px; font-family:'DM Sans',sans-serif; font-size:.82rem; font-weight:500; cursor:pointer; -webkit-tap-highlight-color:transparent; }
+.ov-btn.print-btn { background:#C8952A; color:#fff; }
+.ov-btn.close-btn { background:#333; color:#ccc; }
+#ov-body { padding:22px 18px 18px; font-size:12px; color:#1A1410; }
+.rc-head { text-align:center; border-bottom:2px solid #C8952A; padding-bottom:12px; margin-bottom:14px; }
+.rc-head h2 { font-family:'Playfair Display',serif; font-size:20px; }
+.rc-head p { color:#8B7355; font-size:8px; text-transform:uppercase; letter-spacing:.1em; margin-top:2px; }
+.rc-meta { display:-webkit-flex; display:flex; -webkit-justify-content:space-between; justify-content:space-between; margin-bottom:14px; font-size:10px; color:#555; }
+.rc-gn { font-family:'Playfair Display',serif; font-size:13px; color:#1A1410; font-weight:700; margin-bottom:2px; }
+.rc-rt { text-align:right; line-height:1.7; }
+.rc-tbl { width:100%; border-collapse:collapse; margin-bottom:14px; }
+.rc-tbl thead tr { background:#1A1410; }
+.rc-tbl thead th { color:#E8B84B; padding:6px 7px; font-size:8px; text-transform:uppercase; letter-spacing:.06em; font-weight:500; text-align:left; }
+.rc-tbl thead th.r { text-align:right; }
+.rc-tbl tbody tr { border-bottom:1px solid #eee; }
+.rc-tbl tbody td { padding:6px 7px; font-size:10.5px; }
+.rc-cat td { background:#F5EFE6; color:#6B4C35; font-weight:600; font-size:8px; text-transform:uppercase; letter-spacing:.05em; padding:4px 7px; border-top:2px solid #E2D9CC; }
+.rc-tbl .r { text-align:right; }
+.rc-tots { text-align:right; margin-bottom:14px; }
+.rc-ti { display:inline-table; border-collapse:collapse; min-width:200px; }
+.rc-ti td { padding:4px 8px; font-size:10.5px; }
+.rc-ti .lb { color:#555; }
+.rc-ti .vl { text-align:right; }
+.rc-ti .svc-r td { border-top:1px solid #ddd; color:#555; }
+.rc-ti .gnd-r td { border-top:2px solid #C8952A; font-family:'Playfair Display',serif; font-size:13px; font-weight:700; padding-top:6px; }
+.rc-foot { border-top:1px solid #E2D9CC; padding-top:9px; text-align:center; font-size:8.5px; color:#8B7355; line-height:1.8; }
+</style>
+<style media="print">
+* { -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
+#open-banner, header, .info-bar, .footer-bar, main { display:none !important; }
+#overlay { display:block !important; position:static !important; background:none !important; overflow:visible !important; }
+#ov-panel { margin:0 !important; border-radius:0 !important; }
+#ov-bar { display:none !important; }
+</style>
+</head>
+<body>
+
+<!-- Shown only inside FB/WA/Instagram in-app browsers on iOS -->
+<div id="open-banner">
+  <p>This menu works best in Safari. Tap below to open it properly:</p>
+  <a id="safari-link" href="#">Open in Safari</a>
+  <div class="tip">After tapping, choose "Open in Safari" if prompted</div>
+</div>
+
+<header>
+  <h1 id="r-name">Theory Dining</h1>
+  <p>Please select your menu items below</p>
+</header>
+
+<div class="info-bar">
+  <div class="info-field">
+    <label>Guest Name</label>
+    <input type="text" id="guest-name" placeholder="Enter your name" autocomplete="name" autocorrect="off" autocapitalize="words">
+  </div>
+  <div class="info-field">
+    <label>Guests</label>
+    <input type="number" id="guest-count" class="narrow" min="1" value="2" inputmode="numeric">
+  </div>
+  <span class="min-note" id="min-note">Minimum: 60 per guest</span>
+</div>
+
+<main id="menu-wrap"></main>
+
+<div class="footer-bar">
+  <div class="totals-col">
+    <div class="trow sub"><span>Subtotal</span><span id="f-sub">0</span></div>
+    <div class="trow svc"><span>Service 10%</span><span id="f-svc">0</span></div>
+    <div class="trow grand"><span>Grand Total</span><span id="f-grand">0</span></div>
+    <div class="item-ct" id="f-ct">No items selected</div>
+  </div>
+  <div class="val-block">
+    <div class="val-msg" id="val-msg">Add items to begin</div>
+  </div>
+  <button class="confirm-btn" id="confirm-btn" disabled>Confirm &amp; View Order</button>
+</div>
+
+<div id="overlay">
+  <div id="ov-panel">
+    <div id="ov-bar">
+      <span>Your Order</span>
+      <button class="ov-btn print-btn" id="ov-print">Print / Save PDF</button>
+      <button class="ov-btn close-btn" id="ov-close">Close &amp; Amend</button>
+    </div>
+    <div id="ov-body"></div>
+  </div>
+</div>
+
+<script>
+// =============================================================================
+// MENU DATA — update via admin-upload.html
+// =============================================================================
+var MENU_DATA = {
+  "restaurantName": "Theory Dining",
+  "minimumPerGuest": 60,
+  "categories": [
+    { "name": "Starters", "items": [
+      { "id": 1,  "name": "Burrata & Heirloom Tomato",   "desc": "Fresh burrata, heritage tomatoes, basil oil, sea salt",  "price": 18 },
+      { "id": 2,  "name": "Beef Carpaccio",               "desc": "Thinly sliced beef, capers, parmesan, lemon aioli",      "price": 22 },
+      { "id": 3,  "name": "Seasonal Soup",                "desc": "Chef's daily creation, artisan bread",                   "price": 14 },
+      { "id": 4,  "name": "Shrimp Cocktail",              "desc": "Chilled jumbo shrimp, horseradish cocktail sauce",        "price": 24 }
+    ]},
+    { "name": "Salads", "items": [
+      { "id": 5,  "name": "Classic Caesar",               "desc": "Romaine, house dressing, parmesan crisp, anchovy",       "price": 16 },
+      { "id": 6,  "name": "Roasted Beet & Goat Cheese",   "desc": "Candied walnuts, arugula, sherry vinaigrette",           "price": 17 },
+      { "id": 7,  "name": "Market Green Salad",           "desc": "Seasonal greens, radish, cucumber, herb vinaigrette",    "price": 14 }
+    ]},
+    { "name": "Main Courses", "items": [
+      { "id": 8,  "name": "Grilled Prime Ribeye 12oz",    "desc": "Dry-aged, truffle butter, roasted garlic jus",           "price": 68 },
+      { "id": 9,  "name": "Pan-Seared Sea Bass",          "desc": "Lemon beurre blanc, caperberries, fennel salad",         "price": 52 },
+      { "id": 10, "name": "Duck Confit",                  "desc": "Braised lentils, cherry reduction, crispy skin",         "price": 48 },
+      { "id": 11, "name": "Vegetable Wellington",         "desc": "Seasonal roasted vegetables, puff pastry, mushroom duxelles", "price": 38 },
+      { "id": 12, "name": "Lamb Rack (half)",             "desc": "Herb crust, Dijon, minted pea puree, lamb jus",          "price": 62 }
+    ]},
+    { "name": "Sides", "items": [
+      { "id": 13, "name": "Truffle Frites",               "desc": "House-cut, parmesan, fresh herbs",                       "price": 12 },
+      { "id": 14, "name": "Roasted Seasonal Vegetables",  "desc": "Market selection, herb oil",                             "price": 11 },
+      { "id": 15, "name": "Creamy Mashed Potato",         "desc": "Butter, creme fraiche, chives",                         "price": 10 },
+      { "id": 16, "name": "Sauteed Haricots Verts",       "desc": "Toasted almonds, lemon zest",                           "price": 10 }
+    ]},
+    { "name": "Desserts", "items": [
+      { "id": 17, "name": "Chocolate Fondant",            "desc": "Warm dark chocolate, vanilla bean ice cream",            "price": 14 },
+      { "id": 18, "name": "Creme Brulee",                 "desc": "Classic vanilla, caramelized sugar crust",               "price": 12 },
+      { "id": 19, "name": "Cheese Board (3 selections)",  "desc": "Seasonal cheeses, honey, crackers, dried fruits",        "price": 22 },
+      { "id": 20, "name": "Seasonal Sorbet (3 scoops)",   "desc": "Ask your server for today's flavors",                   "price": 10 }
+    ]}
+  ]
+};
+// =============================================================================
+
+var qty = {};
+
+function gel(id) { return document.getElementById(id); }
+function fmt(n)  { return Math.round(n).toString(); }
+function pad(n)  { return n < 10 ? '0' + n : '' + n; }
+
+function getNow() {
+  var d = new Date();
+  return {
+    date: pad(d.getDate()) + '-' + pad(d.getMonth()+1) + '-' + String(d.getFullYear()).slice(-2),
+    time: pad(d.getHours()) + ':' + pad(d.getMinutes())
+  };
+}
+
+function isDesktop() {
+  try { return window.matchMedia('(hover:hover) and (pointer:fine)').matches && window.innerWidth > 900; }
+  catch(e) { return false; }
+}
+
+// Detect in-app browsers that strip JS for local files
+function isInAppBrowser() {
+  var ua = navigator.userAgent || '';
+  return /FBAN|FBAV|Instagram|Twitter|LinkedInApp|Snapchat|MicroMessenger|Line\/|WhatsApp/.test(ua);
+}
+
+// Session state — silently ignored if storage is blocked
+var _state = { q: {}, n: '', g: '2' };
+function saveState() {
+  try {
+    _state.q = qty;
+    _state.n = gel('guest-name').value;
+    _state.g = gel('guest-count').value;
+    sessionStorage.setItem('td3', JSON.stringify(_state));
+  } catch(e) {}
+}
+function loadState() {
+  try {
+    var s = JSON.parse(sessionStorage.getItem('td3'));
+    if (s) _state = s;
+  } catch(e) {}
+  return _state;
+}
+
+// =============================================================================
+// BUILD MENU
+// All card layout set via JS .style — zero CSS class dependency for display.
+// Immune to any @media print bleed or WebView CSS restrictions.
+// =============================================================================
+function buildMenu() {
+  var saved = loadState();
+  var sq = saved.q || {};
+
+  var rn = gel('r-name');
+  if (rn) rn.textContent = MENU_DATA.restaurantName;
+  document.title = MENU_DATA.restaurantName;
+  var mn = gel('min-note');
+  if (mn) mn.textContent = 'Minimum: ' + MENU_DATA.minimumPerGuest + ' per guest';
+
+  var wrap = gel('menu-wrap');
+  if (!wrap) return;
+  wrap.innerHTML = '';
+
+  var cats = MENU_DATA.categories;
+  for (var ci = 0; ci < cats.length; ci++) {
+    var cat = cats[ci];
+
+    var sec = document.createElement('div');
+    sec.style.marginBottom = '36px';
+
+    var ct = document.createElement('div');
+    ct.style.cssText = 'font-family:\'Playfair Display\',Georgia,serif;font-size:1.2rem;color:#6B4C35;padding-bottom:8px;border-bottom:2px solid #C8952A;margin-bottom:12px;margin-top:36px;';
+    ct.textContent = cat.name;
+    sec.appendChild(ct);
+
+    var items = cat.items;
+    for (var ii = 0; ii < items.length; ii++) {
+      var item = items[ii];
+      var rq = parseInt(sq[item.id]) || 0;
+      qty[item.id] = rq;
+
+      // CARD — display:table so it works on every WebView without flex/grid
+      var card = document.createElement('div');
+      card.id = 'c-' + item.id;
+      card.style.cssText = 'display:table;width:100%;box-sizing:border-box;background:' + (rq > 0 ? '#FFFCF4' : '#fff') + ';border:1px solid ' + (rq > 0 ? '#C8952A' : '#E2D9CC') + ';border-radius:10px;padding:13px 14px;margin-bottom:10px;';
+
+      // Name + desc cell
+      var c1 = document.createElement('div');
+      c1.style.cssText = 'display:table-cell;vertical-align:middle;padding-right:10px;';
+      var nm = document.createElement('div');
+      nm.style.cssText = 'font-weight:500;font-size:.95rem;color:#1A1410;';
+      nm.textContent = item.name;
+      c1.appendChild(nm);
+      if (item.desc) {
+        var ds = document.createElement('div');
+        ds.style.cssText = 'font-size:.74rem;color:#8B7355;margin-top:2px;';
+        ds.textContent = item.desc;
+        c1.appendChild(ds);
+      }
+
+      // Price cell
+      var c2 = document.createElement('div');
+      c2.style.cssText = 'display:table-cell;vertical-align:middle;white-space:nowrap;padding-right:12px;font-family:\'Playfair Display\',Georgia,serif;font-size:.95rem;color:#6B4C35;text-align:right;width:44px;';
+      c2.textContent = fmt(item.price);
+
+      // Qty cell
+      var c3 = document.createElement('div');
+      c3.style.cssText = 'display:table-cell;vertical-align:middle;white-space:nowrap;padding-right:8px;';
+
+      var btnStyle = 'width:28px;height:28px;border:1px solid #E2D9CC;background:#fff;border-radius:50%;font-size:1.1rem;cursor:pointer;color:#6B4C35;vertical-align:middle;line-height:1;padding:0;-webkit-tap-highlight-color:transparent;touch-action:manipulation;';
+      var inpStyle = 'width:36px;text-align:center;padding:4px 2px;border:1px solid #E2D9CC;border-radius:6px;font-size:.88rem;font-family:inherit;background:#fff;vertical-align:middle;-webkit-appearance:none;margin:0 4px;';
+
+      var bm = document.createElement('button');
+      bm.type = 'button'; bm.textContent = '-';
+      bm.setAttribute('data-id', item.id); bm.setAttribute('data-d', '-1');
+      bm.style.cssText = btnStyle;
+
+      var inp = document.createElement('input');
+      inp.type = 'number'; inp.id = 'q-' + item.id;
+      inp.value = rq; inp.min = '0'; inp.max = '99';
+      inp.setAttribute('data-id', item.id);
+      inp.style.cssText = inpStyle;
+
+      var bp = document.createElement('button');
+      bp.type = 'button'; bp.textContent = '+';
+      bp.setAttribute('data-id', item.id); bp.setAttribute('data-d', '1');
+      bp.style.cssText = btnStyle;
+
+      c3.appendChild(bm); c3.appendChild(inp); c3.appendChild(bp);
+
+      // Total cell
+      var c4 = document.createElement('div');
+      c4.id = 't-' + item.id;
+      c4.style.cssText = 'display:table-cell;vertical-align:middle;text-align:right;white-space:nowrap;width:52px;font-weight:' + (rq > 0 ? '600' : '400') + ';color:' + (rq > 0 ? '#C8952A' : '#8B7355') + ';';
+      c4.textContent = rq > 0 ? fmt(rq * item.price) : '-';
+
+      card.appendChild(c1); card.appendChild(c2);
+      card.appendChild(c3); card.appendChild(c4);
+      sec.appendChild(card);
+    }
+    wrap.appendChild(sec);
+  }
+
+  if (saved.n) { var gn2 = gel('guest-name'); if (gn2) gn2.value = saved.n; }
+  if (saved.g) { var gc2 = gel('guest-count'); if (gc2) gc2.value = saved.g; }
+
+  // Delegated listeners on the wrap — one handler for all +/- buttons and inputs
+  wrap.addEventListener('click', function(e) {
+    var el = e.target || e.srcElement;
+    while (el && el !== wrap) {
+      if (el.getAttribute && el.getAttribute('data-d')) break;
+      el = el.parentNode;
+    }
+    if (el && el !== wrap) {
+      var id = parseInt(el.getAttribute('data-id'));
+      var nv = Math.max(0, (qty[id] || 0) + parseInt(el.getAttribute('data-d')));
+      var i2 = gel('q-' + id); if (i2) i2.value = nv;
+      applyQty(id, nv);
+    }
+  });
+  wrap.addEventListener('change', function(e) {
+    var el = e.target || e.srcElement;
+    if (el && el.getAttribute('data-id')) applyQty(parseInt(el.getAttribute('data-id')), parseInt(el.value) || 0);
+  });
+  wrap.addEventListener('input', function(e) {
+    var el = e.target || e.srcElement;
+    if (el && el.getAttribute('data-id')) applyQty(parseInt(el.getAttribute('data-id')), parseInt(el.value) || 0);
+  });
+
+  updateFooter();
+}
+
+function applyQty(id, v) {
+  var q = Math.max(0, isNaN(v) ? 0 : v);
+  qty[id] = q;
+  var inp = gel('q-' + id); if (inp) inp.value = q;
+  var price = 0;
+  var cats = MENU_DATA.categories;
+  for (var i = 0; i < cats.length; i++)
+    for (var j = 0; j < cats[i].items.length; j++)
+      if (cats[i].items[j].id === id) { price = cats[i].items[j].price; break; }
+  var tot = gel('t-' + id), card = gel('c-' + id);
+  if (q > 0) {
+    tot.textContent = fmt(q * price); tot.style.color = '#C8952A'; tot.style.fontWeight = '600';
+    card.style.background = '#FFFCF4'; card.style.border = '1px solid #C8952A';
+  } else {
+    tot.textContent = '-'; tot.style.color = '#8B7355'; tot.style.fontWeight = '400';
+    card.style.background = '#fff'; card.style.border = '1px solid #E2D9CC';
+  }
+  saveState(); updateFooter();
+}
+
+function calcTotals() {
+  var sub = 0, ct = 0, cats = MENU_DATA.categories;
+  for (var i = 0; i < cats.length; i++)
+    for (var j = 0; j < cats[i].items.length; j++) {
+      var q = qty[cats[i].items[j].id] || 0;
+      sub += q * cats[i].items[j].price; ct += q;
+    }
+  var svc = Math.floor(sub * 0.1);
+  return { sub: sub, svc: svc, grand: sub + svc, ct: ct };
+}
+
+function updateFooter() {
+  var t = calcTotals();
+  var guests = parseInt(gel('guest-count').value) || 0;
+  var min = guests * MENU_DATA.minimumPerGuest;
+  var name = gel('guest-name').value.trim();
+  gel('f-sub').textContent   = fmt(t.sub);
+  gel('f-svc').textContent   = fmt(t.svc);
+  gel('f-grand').textContent = fmt(t.grand);
+  gel('f-ct').textContent    = t.ct === 0 ? 'No items selected' : t.ct + ' item' + (t.ct !== 1 ? 's' : '') + ' selected';
+  var msg = gel('val-msg'), btn = gel('confirm-btn');
+  if      (t.ct === 0)   { msg.textContent = 'Add items to begin';               msg.className = 'val-msg';      btn.disabled = true; }
+  else if (!name)         { msg.textContent = 'Please enter your name';           msg.className = 'val-msg warn'; btn.disabled = true; }
+  else if (guests === 0)  { msg.textContent = 'Please enter number of guests';   msg.className = 'val-msg warn'; btn.disabled = true; }
+  else if (t.sub < min)  { msg.textContent = 'Add ' + fmt(min-t.sub) + ' more (min ' + fmt(min) + ')'; msg.className = 'val-msg warn'; btn.disabled = true; }
+  else                   { msg.textContent = 'Ready — tap to view order';        msg.className = 'val-msg ok';   btn.disabled = false; }
+}
+
+function buildRows() {
+  var rows = '', cats = MENU_DATA.categories;
+  for (var ci = 0; ci < cats.length; ci++) {
+    var catRows = '', items = cats[ci].items;
+    for (var ii = 0; ii < items.length; ii++) {
+      var item = items[ii], q = qty[item.id] || 0;
+      if (q > 0) catRows += '<tr><td>' + item.name + '</td><td class="r">' + q + '</td><td class="r">' + fmt(item.price) + '</td><td class="r">' + fmt(q * item.price) + '</td></tr>';
+    }
+    if (catRows) rows += '<tr class="rc-cat"><td colspan="4">' + cats[ci].name + '</td></tr>' + catRows;
+  }
+  return rows;
+}
+
+function buildOverlayHTML(guestName, guests, dt, t, rows) {
+  return '<div class="rc-head"><h2>' + MENU_DATA.restaurantName + '</h2><p>Pre-Order Summary</p></div>' +
+    '<div class="rc-meta"><div><div class="rc-gn">' + guestName + '</div><div>' + guests + ' guest' + (parseInt(guests) !== 1 ? 's' : '') + '</div></div><div class="rc-rt">' + dt.date + '<br>' + dt.time + '</div></div>' +
+    '<table class="rc-tbl"><thead><tr><th>Item</th><th class="r">Qty</th><th class="r">Price</th><th class="r">Total</th></tr></thead><tbody>' + rows + '</tbody></table>' +
+    '<div class="rc-tots"><table class="rc-ti">' +
+      '<tr><td class="lb">Subtotal</td><td class="vl">' + fmt(t.sub) + '</td></tr>' +
+      '<tr class="svc-r"><td class="lb">Service Charge 10%</td><td class="vl">' + fmt(t.svc) + '</td></tr>' +
+      '<tr class="gnd-r"><td class="lb">Grand Total</td><td class="vl">' + fmt(t.grand) + '</td></tr>' +
+    '</table></div>' +
+    '<div class="rc-foot">Prices Include VAT 18%<br>Theory Dining: 23 Pushkin St. Tbilisi &nbsp;|&nbsp; 595-88-88-23</div>';
+}
+
+function buildDesktopPage(guestName, guests, dt, t, rows) {
+  var css = '*{margin:0;padding:0;box-sizing:border-box;}body{font-family:Georgia,serif;color:#1A1410;background:#FAF7F2;}.page{background:#fff;max-width:700px;margin:28px auto;border-radius:12px;overflow:hidden;box-shadow:0 6px 32px rgba(0,0,0,.1);}.toolbar{background:#1A1410;padding:12px 22px;display:flex;align-items:center;justify-content:space-between;gap:10px;}.toolbar span{color:#aaa;font-size:.75rem;letter-spacing:.05em;text-transform:uppercase;}.tb-btn{background:#C8952A;color:#fff;border:none;padding:8px 18px;border-radius:6px;font-family:Georgia,serif;font-size:.85rem;cursor:pointer;}.receipt{padding:28px 32px;}h1{font-size:24px;letter-spacing:.03em;}.tag{font-size:8px;text-transform:uppercase;letter-spacing:.14em;color:#8B7355;margin-top:2px;margin-bottom:12px;}hr{border:none;border-top:2px solid #C8952A;margin-bottom:14px;}.meta{display:flex;justify-content:space-between;margin-bottom:14px;font-size:11px;color:#555;}.gn{font-size:15px;font-weight:bold;color:#1A1410;margin-bottom:2px;}.rt{text-align:right;line-height:1.7;}table{width:100%;border-collapse:collapse;margin-bottom:14px;}thead tr{background:#1A1410;}thead th{color:#E8B84B;padding:6px 9px;font-size:8.5px;text-transform:uppercase;letter-spacing:.06em;font-weight:normal;text-align:left;}thead th.r{text-align:right;}tbody tr{border-bottom:1px solid #eee;}tbody tr:nth-child(even){background:#FAF7F2;}tbody td{padding:6px 9px;font-size:11px;}.ch td{background:#F5EFE6;color:#6B4C35;font-weight:bold;font-size:8.5px;text-transform:uppercase;letter-spacing:.05em;padding:4px 9px;border-top:2px solid #E2D9CC;}.r{text-align:right;}.tw{text-align:right;margin-bottom:18px;}.tt{display:inline-table;border-collapse:collapse;min-width:220px;}.tt td{padding:4px 9px;font-size:11px;}.tt .lb{color:#555;}.tt .vl{text-align:right;}.tt .sl td{border-top:1px solid #ddd;color:#555;}.tt .gl td{border-top:2px solid #C8952A;font-size:14px;font-weight:bold;padding-top:7px;}.foot{border-top:1px solid #E2D9CC;padding-top:9px;text-align:center;font-size:9px;color:#8B7355;line-height:1.9;}@media print{*{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;}body{background:#fff;}.page{margin:0;border-radius:0;box-shadow:none;}.toolbar{display:none;}@page{margin:10mm;size:A4;}}';
+  return '<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>' + MENU_DATA.restaurantName + ' - Order</title><style>' + css + '</style></head><body><div class="page"><div class="toolbar"><span>Order — ' + guestName + '</span><button class="tb-btn" onclick="window.print()">Print / Save as PDF</button></div><div class="receipt"><h1>' + MENU_DATA.restaurantName + '</h1><div class="tag">Pre-Order Summary</div><hr><div class="meta"><div><div class="gn">' + guestName + '</div><div>' + guests + ' guest' + (parseInt(guests)!==1?'s':'') + '</div></div><div class="rt">' + dt.date + '<br>' + dt.time + '</div></div><table><thead><tr><th>Item</th><th class="r">Qty</th><th class="r">Price</th><th class="r">Total</th></tr></thead><tbody>' + rows + '</tbody></table><div class="tw"><table class="tt"><tr><td class="lb">Subtotal</td><td class="vl">' + fmt(t.sub) + '</td></tr><tr class="sl"><td class="lb">Service Charge 10%</td><td class="vl">' + fmt(t.svc) + '</td></tr><tr class="gl"><td class="lb">Grand Total</td><td class="vl">' + fmt(t.grand) + '</td></tr></table></div><div class="foot">Prices Include VAT 18%<br>Theory Dining: 23 Pushkin St. Tbilisi &nbsp;|&nbsp; 595-88-88-23</div></div></div></body></html>';
+}
+
+// =============================================================================
+// INIT — everything that touches the DOM goes here, called after DOM is ready
+// =============================================================================
+function init() {
+  // ── In-app browser detection & escape banner ──
+  // When someone opens this file inside FB Messenger / WhatsApp on iOS,
+  // those apps use a locked-down WebView. The banner tells the user to
+  // open it in Safari instead. The safari-link uses the current URL so
+  // once hosted online it will open in Safari automatically.
+  if (isInAppBrowser()) {
+    var banner = gel('open-banner');
+    if (banner) {
+      banner.style.display = 'block';
+      // Push content down so banner doesn't cover header
+      var hdr = document.querySelector('header');
+      if (hdr) hdr.style.top = banner.offsetHeight + 'px';
+    }
+    // Set the link to current page URL (works when hosted; local file shows tip instead)
+    var link = gel('safari-link');
+    if (link && window.location.href.indexOf('http') === 0) {
+      link.href = window.location.href;
+      link.target = '_blank'; // triggers Safari on iOS
+    } else if (link) {
+      link.textContent = 'Tap the \u22EE or Share button \u2192 Open in Browser';
+      link.href = '#';
+      link.style.background = '#555';
+    }
+  }
+
+  var gc = gel('guest-count');
+  var gn = gel('guest-name');
+  var cb = gel('confirm-btn');
+  var op = gel('ov-print');
+  var oc = gel('ov-close');
+  var ov = gel('overlay');
+
+  if (gc) gc.addEventListener('input', function() { saveState(); updateFooter(); });
+  if (gn) gn.addEventListener('input', function() { saveState(); updateFooter(); });
+
+  if (cb) cb.addEventListener('click', function() {
+    var t = calcTotals();
+    var guestName = (gel('guest-name').value || '').trim() || 'Guest';
+    var guests    = gel('guest-count').value;
+    var dt        = getNow();
+    var rows      = buildRows();
+    if (isDesktop()) {
+      var win = window.open('', '_blank');
+      if (win) { win.document.open(); win.document.write(buildDesktopPage(guestName, guests, dt, t, rows)); win.document.close(); }
+    } else {
+      var ob = gel('ov-body');
+      if (ob) ob.innerHTML = buildOverlayHTML(guestName, guests, dt, t, rows);
+      if (ov) { ov.className = 'show'; ov.scrollTop = 0; }
+      window.scrollTo(0, 0);
+    }
+  });
+
+  if (op) op.addEventListener('click', function() { window.print(); });
+  if (oc) oc.addEventListener('click', function() { if (ov) ov.className = ''; });
+  if (ov) ov.addEventListener('click', function(e) {
+    if ((e.target || e.srcElement) === this) this.className = '';
+  });
+
+  buildMenu();
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', init);
+} else {
+  init();
+}
+</script>
+</body>
+</html>
