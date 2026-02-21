@@ -418,160 +418,201 @@ function buildDesktopPage(guestName, guests, dt, t, rows) {
 // GENERATE PDF using jsPDF and trigger OS share sheet or download
 // iOS Safari 15+, Android Chrome: navigator.share() -> share sheet immediately
 // Desktop / fallback: downloads the PDF file directly
+//
+// FONT STRATEGY: fetch Noto Sans Georgian TTF from Google Fonts CDN and embed
+// it directly into the PDF. This is the only reliable way to render Georgian
+// on iOS — the PDF must carry its own font, it cannot rely on system fallbacks.
 // =============================================================================
+
+// Cache the font base64 after first fetch so repeat PDF generations are instant
+var _cachedFontB64 = null;
+
 function generateAndSharePDF(guestName, guests, dt, t) {
   var btn = gel('ov-send');
-  if (btn) { btn.textContent = 'Preparing…'; btn.disabled = true; }
+  if (btn) { btn.textContent = 'იტვირთება…'; btn.disabled = true; }
 
   function resetBtn() {
     if (btn) { btn.textContent = '📤 გაგზავნა / PDF შენახვა'; btn.disabled = false; }
   }
 
-  // jsPDF loaded from CDN — if offline or blocked, fall back to window.print()
   var jsPDFLib = (window.jspdf && window.jspdf.jsPDF) || window.jsPDF;
-  if (!jsPDFLib) {
-    window.print();
-    resetBtn();
-    return;
+  if (!jsPDFLib) { window.print(); resetBtn(); return; }
+
+  // Fetch Noto Sans Georgian TTF (regular + bold weights), embed into PDF
+  // Using two weights so bold headings look correct too
+  var FONT_URL_REGULAR = 'https://fonts.gstatic.com/s/notosansgeorgian/v43/PlIaFke5O6RzLfvNNVSivR09_KvYSoac.ttf';
+  var FONT_URL_BOLD    = 'https://fonts.gstatic.com/s/notosansgeorgian/v43/PlIaFke5O6RzLfvNNVSivR09_KvYSoWc.ttf';
+
+  function fetchAsBase64(url) {
+    return fetch(url)
+      .then(function(r) { return r.arrayBuffer(); })
+      .then(function(buf) {
+        var bytes = new Uint8Array(buf);
+        var binary = '';
+        for (var i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
+        return btoa(binary);
+      });
   }
 
-  try {
-    var doc = new jsPDFLib({ unit: 'mm', format: 'a4', orientation: 'portrait' });
-    var lm = 18, rm = 192, y = 22;
-    var cGold = [200, 149, 42], cInk = [26, 20, 16], cBrown = [107, 76, 53], cMuted = [139, 115, 85];
+  function buildAndSharePDF(fontRegB64, fontBoldB64) {
+    try {
+      var doc = new jsPDFLib({ unit: 'mm', format: 'a4', orientation: 'portrait' });
 
-    // ── Restaurant header ──
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(20);
-    doc.setTextColor(cInk[0], cInk[1], cInk[2]);
-    doc.text(MENU_DATA.restaurantName, 105, y, { align: 'center' });
-    y += 7;
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(8);
-    doc.setTextColor(cMuted[0], cMuted[1], cMuted[2]);
-    doc.text('შეკვეთა', 105, y, { align: 'center' });
-    y += 5;
-    doc.setDrawColor(cGold[0], cGold[1], cGold[2]);
-    doc.setLineWidth(0.6);
-    doc.line(lm, y, rm, y);
-    y += 8;
+      // Register Noto Sans Georgian so all Georgian glyphs are embedded in the PDF
+      if (fontRegB64) {
+        doc.addFileToVFS('NotoSansGeorgian-Regular.ttf', fontRegB64);
+        doc.addFont('NotoSansGeorgian-Regular.ttf', 'NotoGeo', 'normal');
+      }
+      if (fontBoldB64) {
+        doc.addFileToVFS('NotoSansGeorgian-Bold.ttf', fontBoldB64);
+        doc.addFont('NotoSansGeorgian-Bold.ttf', 'NotoGeo', 'bold');
+      }
 
-    // ── Guest info ──
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(12);
-    doc.setTextColor(cInk[0], cInk[1], cInk[2]);
-    doc.text(guestName, lm, y);
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(9);
-    doc.setTextColor(cMuted[0], cMuted[1], cMuted[2]);
-    doc.text(dt.date + '  ' + dt.time, rm, y, { align: 'right' });
-    y += 5;
-    doc.text(guests + ' სტუმარი', lm, y);
-    y += 9;
+      // Use embedded font everywhere; fall back to helvetica only for numbers/ASCII
+      var F = fontRegB64 ? 'NotoGeo' : 'helvetica';
+      var lm = 18, rm = 192, y = 22;
+      var cGold = [200, 149, 42], cInk = [26, 20, 16], cBrown = [107, 76, 53], cMuted = [139, 115, 85];
 
-    // ── Table header ──
-    doc.setFillColor(cInk[0], cInk[1], cInk[2]);
-    doc.rect(lm, y - 4.5, rm - lm, 7, 'F');
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(8);
-    doc.setTextColor(cGold[0], cGold[1], cGold[2]);
-    doc.text('დასახელება',  lm + 2, y);
-    doc.text('რაოდ.',   150, y, { align: 'right' });
-    doc.text('ფასი', 167, y, { align: 'right' });
-    doc.text('ჯამი', rm - 1, y, { align: 'right' });
-    y += 7;
+      // ── Restaurant header ──
+      doc.setFont(F, 'bold');
+      doc.setFontSize(20);
+      doc.setTextColor(cInk[0], cInk[1], cInk[2]);
+      doc.text(MENU_DATA.restaurantName, 105, y, { align: 'center' });
+      y += 7;
+      doc.setFont(F, 'normal');
+      doc.setFontSize(8);
+      doc.setTextColor(cMuted[0], cMuted[1], cMuted[2]);
+      doc.text('შეკვეთა', 105, y, { align: 'center' });
+      y += 5;
+      doc.setDrawColor(cGold[0], cGold[1], cGold[2]);
+      doc.setLineWidth(0.6);
+      doc.line(lm, y, rm, y);
+      y += 8;
 
-    // ── Order rows ──
-    var rowAlt = false;
-    var cats = MENU_DATA.categories;
-    for (var ci = 0; ci < cats.length; ci++) {
-      var catHasItems = false;
-      for (var ii = 0; ii < cats[ci].items.length; ii++) { if (qty[cats[ci].items[ii].id] > 0) { catHasItems = true; break; } }
-      if (!catHasItems) continue;
+      // ── Guest info ──
+      doc.setFont(F, 'bold');
+      doc.setFontSize(12);
+      doc.setTextColor(cInk[0], cInk[1], cInk[2]);
+      doc.text(guestName, lm, y);
+      doc.setFont(F, 'normal');
+      doc.setFontSize(9);
+      doc.setTextColor(cMuted[0], cMuted[1], cMuted[2]);
+      doc.text(dt.date + '  ' + dt.time, rm, y, { align: 'right' });
+      y += 5;
+      doc.text(guests + ' სტუმარი', lm, y);
+      y += 9;
 
-      // Category label
-      doc.setFillColor(245, 239, 230);
-      doc.rect(lm, y - 3.5, rm - lm, 6, 'F');
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(7.5);
-      doc.setTextColor(cBrown[0], cBrown[1], cBrown[2]);
-      doc.text(cats[ci].name.toUpperCase(), lm + 2, y);
-      y += 6;
+      // ── Table header ──
+      doc.setFillColor(cInk[0], cInk[1], cInk[2]);
+      doc.rect(lm, y - 4.5, rm - lm, 7, 'F');
+      doc.setFont(F, 'bold');
+      doc.setFontSize(8);
+      doc.setTextColor(cGold[0], cGold[1], cGold[2]);
+      doc.text('დასახელება', lm + 2, y);
+      doc.text('რაოდ.', 150, y, { align: 'right' });
+      doc.text('ფასი',  167, y, { align: 'right' });
+      doc.text('ჯამი',  rm - 1, y, { align: 'right' });
+      y += 7;
 
-      for (var ii2 = 0; ii2 < cats[ci].items.length; ii2++) {
-        var item = cats[ci].items[ii2];
-        var q = qty[item.id] || 0;
-        if (!q) continue;
+      // ── Order rows ──
+      var rowAlt = false;
+      var cats = MENU_DATA.categories;
+      for (var ci = 0; ci < cats.length; ci++) {
+        var catHasItems = false;
+        for (var ii = 0; ii < cats[ci].items.length; ii++) { if (qty[cats[ci].items[ii].id] > 0) { catHasItems = true; break; } }
+        if (!catHasItems) continue;
 
-        if (rowAlt) { doc.setFillColor(250, 247, 242); doc.rect(lm, y - 3.5, rm - lm, 6, 'F'); }
-        rowAlt = !rowAlt;
-
-        doc.setFont('helvetica', 'normal');
-        doc.setFontSize(9);
-        doc.setTextColor(cInk[0], cInk[1], cInk[2]);
-        var name = item.name.length > 44 ? item.name.substring(0, 42) + '...' : item.name;
-        doc.text(name,             lm + 2, y);
-        doc.text(String(q),        150,    y, { align: 'right' });
-        doc.text(fmt(item.price),  167,    y, { align: 'right' });
-        doc.text(fmt(q * item.price), rm - 1, y, { align: 'right' });
+        // Category label
+        doc.setFillColor(245, 239, 230);
+        doc.rect(lm, y - 3.5, rm - lm, 6, 'F');
+        doc.setFont(F, 'bold');
+        doc.setFontSize(7.5);
+        doc.setTextColor(cBrown[0], cBrown[1], cBrown[2]);
+        doc.text(cats[ci].name.toUpperCase(), lm + 2, y);
         y += 6;
-        if (y > 260) { doc.addPage(); y = 20; rowAlt = false; }
+
+        for (var ii2 = 0; ii2 < cats[ci].items.length; ii2++) {
+          var item = cats[ci].items[ii2];
+          var q = qty[item.id] || 0;
+          if (!q) continue;
+
+          if (rowAlt) { doc.setFillColor(250, 247, 242); doc.rect(lm, y - 3.5, rm - lm, 6, 'F'); }
+          rowAlt = !rowAlt;
+
+          doc.setFont(F, 'normal');
+          doc.setFontSize(9);
+          doc.setTextColor(cInk[0], cInk[1], cInk[2]);
+          var iname = item.name.length > 44 ? item.name.substring(0, 42) + '...' : item.name;
+          doc.text(iname,               lm + 2, y);
+          doc.text(String(q),           150,    y, { align: 'right' });
+          doc.text(fmt(item.price),     167,    y, { align: 'right' });
+          doc.text(fmt(q * item.price), rm - 1, y, { align: 'right' });
+          y += 6;
+          if (y > 260) { doc.addPage(); y = 20; rowAlt = false; }
+        }
       }
-    }
 
-    // ── Totals ──
-    y += 4;
-    var tx = rm - 72;
-    doc.setDrawColor(220, 220, 220); doc.setLineWidth(0.3);
-    doc.line(tx, y, rm, y); y += 5;
-    doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.setTextColor(cMuted[0], cMuted[1], cMuted[2]);
-    doc.text('ჯამი',           tx + 2, y); doc.text(fmt(t.sub),   rm - 1, y, { align: 'right' }); y += 5;
-    doc.text('მომსახურება 10%', tx + 2, y); doc.text(fmt(t.svc),   rm - 1, y, { align: 'right' }); y += 2;
-    doc.setDrawColor(cGold[0], cGold[1], cGold[2]); doc.setLineWidth(0.5);
-    doc.line(tx, y, rm, y); y += 5;
-    doc.setFont('helvetica', 'bold'); doc.setFontSize(11); doc.setTextColor(cInk[0], cInk[1], cInk[2]);
-    doc.text('მთლიანად',        tx + 2, y); doc.text(fmt(t.grand), rm - 1, y, { align: 'right' }); y += 10;
+      // ── Totals ──
+      y += 4;
+      var tx = rm - 72;
+      doc.setDrawColor(220, 220, 220); doc.setLineWidth(0.3);
+      doc.line(tx, y, rm, y); y += 5;
+      doc.setFont(F, 'normal'); doc.setFontSize(9); doc.setTextColor(cMuted[0], cMuted[1], cMuted[2]);
+      doc.text('ჯამი',            tx + 2, y); doc.text(fmt(t.sub),   rm - 1, y, { align: 'right' }); y += 5;
+      doc.text('მომსახურება 10%', tx + 2, y); doc.text(fmt(t.svc),   rm - 1, y, { align: 'right' }); y += 2;
+      doc.setDrawColor(cGold[0], cGold[1], cGold[2]); doc.setLineWidth(0.5);
+      doc.line(tx, y, rm, y); y += 5;
+      doc.setFont(F, 'bold'); doc.setFontSize(11); doc.setTextColor(cInk[0], cInk[1], cInk[2]);
+      doc.text('მთლიანად',        tx + 2, y); doc.text(fmt(t.grand), rm - 1, y, { align: 'right' }); y += 10;
 
-    // ── Footer ──
-    doc.setDrawColor(226, 217, 204); doc.setLineWidth(0.3);
-    doc.line(lm, y, rm, y); y += 5;
-    doc.setFont('helvetica', 'normal'); doc.setFontSize(8); doc.setTextColor(cMuted[0], cMuted[1], cMuted[2]);
-    doc.text('ფასები მოიცავს დღგ-ს 18%', 105, y, { align: 'center' }); y += 4.5;
-    doc.text('თეორია დაინინგი, პუშკინის ქ. 23, თბილისი, ტელ.: 595-88-88-23', 105, y, { align: 'center' });
+      // ── Footer ──
+      doc.setDrawColor(226, 217, 204); doc.setLineWidth(0.3);
+      doc.line(lm, y, rm, y); y += 5;
+      doc.setFont(F, 'normal'); doc.setFontSize(8); doc.setTextColor(cMuted[0], cMuted[1], cMuted[2]);
+      doc.text('ფასები მოიცავს დღგ-ს 18%', 105, y, { align: 'center' }); y += 4.5;
+      doc.text('თეორია დაინინგი, პუშკინის ქ. 23, თბილისი, ტელ.: 595-88-88-23', 105, y, { align: 'center' });
 
-    // ── Share or download ──
-    var pdfBlob = doc.output('blob');
-    var fileName = 'Order-' + guestName.replace(/\s+/g, '-') + '-' + dt.date + '.pdf';
+      // ── Share or download ──
+      var pdfBlob = doc.output('blob');
+      var fileName = 'Order-' + guestName.replace(/\s+/g, '-') + '-' + dt.date + '.pdf';
 
-    // Web Share API: iOS Safari 15+ and Android Chrome support file sharing
-    // This immediately opens the native OS share sheet
-    if (navigator.share && navigator.canShare) {
-      var file = new File([pdfBlob], fileName, { type: 'application/pdf' });
-      if (navigator.canShare({ files: [file] })) {
-        navigator.share({
-          files: [file],
-          title: MENU_DATA.restaurantName + ' - Order',
-          text: 'Order for ' + guestName
-        }).then(function() {
-          resetBtn();
-        }).catch(function(err) {
-          // User cancelled share — not an error
-          if (err.name !== 'AbortError') { triggerDownload(pdfBlob, fileName); }
-          resetBtn();
-        });
-        return; // wait for share promise
+      if (navigator.share && navigator.canShare) {
+        var file = new File([pdfBlob], fileName, { type: 'application/pdf' });
+        if (navigator.canShare({ files: [file] })) {
+          navigator.share({
+            files: [file],
+            title: MENU_DATA.restaurantName + ' - Order',
+            text: 'Order for ' + guestName
+          }).then(function() {
+            resetBtn();
+          }).catch(function(err) {
+            if (err.name !== 'AbortError') { triggerDownload(pdfBlob, fileName); }
+            resetBtn();
+          });
+          return;
+        }
       }
+      triggerDownload(pdfBlob, fileName);
+      resetBtn();
+
+    } catch(e) {
+      console.error('PDF generation error:', e);
+      window.print();
+      resetBtn();
     }
+  } // end buildAndSharePDF
 
-    // Fallback: download the PDF directly (desktop browsers, older iOS)
-    triggerDownload(pdfBlob, fileName);
-    resetBtn();
+  // Fetch both font weights, then build PDF. If fetch fails, build without embedded font.
+  var fetchReg  = _cachedFontB64 ? Promise.resolve(_cachedFontB64.reg)  : fetchAsBase64(FONT_URL_REGULAR);
+  var fetchBold = _cachedFontB64 ? Promise.resolve(_cachedFontB64.bold) : fetchAsBase64(FONT_URL_BOLD);
 
-  } catch(e) {
-    console.error('PDF generation error:', e);
-    window.print();
-    resetBtn();
-  }
+  Promise.all([fetchReg, fetchBold]).then(function(fonts) {
+    _cachedFontB64 = { reg: fonts[0], bold: fonts[1] };
+    buildAndSharePDF(fonts[0], fonts[1]);
+  }).catch(function(err) {
+    console.warn('Font fetch failed, building PDF without embedded font:', err);
+    buildAndSharePDF(null, null);
+  });
 }
 
 function triggerDownload(blob, fileName) {
