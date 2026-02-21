@@ -135,7 +135,7 @@ main { max-width:900px; margin:0 auto; padding:24px 16px 200px; }
 // MENU DATA — update via admin-upload.html
 // =============================================================================
 var MENU_DATA = {
-  "restaurantName": "Theory Dining",
+  "restaurantName": "თეორია დაინინგი",
   "minimumPerGuest": 60,
   "categories": [
     {
@@ -387,7 +387,7 @@ function updateFooter() {
   if      (t.ct === 0)    { msg.textContent = 'დაიწყეთ კერძების არჩევა';                                                     msg.className = 'val-msg';      btn.disabled = true;  }
   else if (!name)          { msg.textContent = 'შეიყვანეთ სტუმრის სახელი';                                                 msg.className = 'val-msg warn'; btn.disabled = true;  }
   else if (guests === 0)   { msg.textContent = 'შეიყვანეთ სტუმრების რაოდენობა';                                          msg.className = 'val-msg warn'; btn.disabled = true;  }
-  else if (t.sub < min)   { msg.textContent = 'დაამატეთ ' + fmt(min - t.sub) + ' მინ. ლარი (მინ. ' + fmt(min) + ')';              msg.className = 'val-msg warn'; btn.disabled = true;  }
+  else if (t.sub < min)   { msg.textContent = 'დაამატეთ ' + fmt(min - t.sub) + ' ლარი (მინ. ' + fmt(min) + ')';              msg.className = 'val-msg warn'; btn.disabled = true;  }
   else                    { msg.textContent = 'შეკვეთა შეიძლება';                                               msg.className = 'val-msg ok';   btn.disabled = false; }
 }
 
@@ -603,6 +603,7 @@ function init() {
     }
   }
 
+  var msg = gel('val-msg');
   var gc = gel('guest-count');
   var gn = gel('guest-name');
   var cb = gel('confirm-btn');
@@ -611,6 +612,8 @@ function init() {
   var ov = gel('overlay');
 
   if (gc) gc.addEventListener('input', function() { saveState(); updateFooter(); });
+  if (msg) msg.style.cursor = 'pointer';
+  if (msg) msg.addEventListener('click', function() { var gn2 = gel('guest-name'); if (gn2) { gn2.focus(); gn2.scrollIntoView({ behavior: 'smooth', block: 'center' }); } });
   if (gn) gn.addEventListener('input', function() { saveState(); updateFooter(); });
 
   // Store current order data so the Send button can access it
