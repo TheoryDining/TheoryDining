@@ -5,33 +5,17 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Theory Dining</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
 * { margin:0; padding:0; box-sizing:border-box; }
 body { background:#FAF7F2; font-family:'DM Sans',sans-serif; color:#1A1410; }
-
-/* In-app browser banner â shown when FB/WA/Instagram opens this file */
-#open-banner {
-  display:none;
-  position:fixed; top:0; left:0; right:0; z-index:9999;
-  background:#1A1410; color:#fff;
-  padding:14px 18px;
-  text-align:center;
-  box-shadow:0 2px 12px rgba(0,0,0,.4);
-}
+#open-banner { display:none; position:fixed; top:0; left:0; right:0; z-index:9999; background:#1A1410; color:#fff; padding:14px 18px; text-align:center; box-shadow:0 2px 12px rgba(0,0,0,.4); }
 #open-banner p { font-size:.85rem; color:#ccc; margin-bottom:8px; }
-#open-banner a {
-  display:inline-block;
-  background:#C8952A; color:#fff;
-  padding:10px 22px; border-radius:8px;
-  font-size:.9rem; font-weight:600;
-  text-decoration:none; letter-spacing:.02em;
-}
+#open-banner a { display:inline-block; background:#C8952A; color:#fff; padding:10px 22px; border-radius:8px; font-size:.9rem; font-weight:600; text-decoration:none; }
 #open-banner .tip { font-size:.72rem; color:#8B7355; margin-top:6px; }
-
 header { background:#1A1410; padding:22px 24px 18px; text-align:center; position:sticky; top:0; z-index:50; }
 header h1 { font-family:'Playfair Display',serif; font-size:1.8rem; color:#E8B84B; letter-spacing:.04em; }
 header p { color:#8B7355; font-size:.78rem; margin-top:3px; letter-spacing:.08em; text-transform:uppercase; }
-
 .info-bar { background:#FFFDF9; border-bottom:1px solid #E2D9CC; padding:14px 24px; display:-webkit-flex; display:flex; -webkit-align-items:flex-end; align-items:flex-end; gap:18px; -webkit-flex-wrap:wrap; flex-wrap:wrap; }
 .info-field { display:-webkit-flex; display:flex; -webkit-flex-direction:column; flex-direction:column; gap:4px; }
 .info-field label { font-size:.7rem; text-transform:uppercase; letter-spacing:.07em; color:#8B7355; font-weight:500; }
@@ -40,7 +24,6 @@ header p { color:#8B7355; font-size:.78rem; margin-top:3px; letter-spacing:.08em
 .info-field input:focus { outline:none; border-color:#C8952A; }
 .min-note { font-size:.75rem; color:#8B7355; padding-bottom:8px; }
 main { max-width:900px; margin:0 auto; padding:24px 16px 200px; }
-
 .footer-bar { position:fixed; bottom:0; left:0; right:0; background:#1A1410; color:#fff; padding:12px 24px; display:-webkit-flex; display:flex; -webkit-align-items:center; align-items:center; -webkit-justify-content:space-between; justify-content:space-between; -webkit-flex-wrap:wrap; flex-wrap:wrap; gap:8px; z-index:100; box-shadow:0 -4px 20px rgba(0,0,0,.3); }
 .totals-col { display:-webkit-flex; display:flex; -webkit-flex-direction:column; flex-direction:column; gap:2px; min-width:140px; }
 .trow { display:-webkit-flex; display:flex; -webkit-justify-content:space-between; justify-content:space-between; gap:20px; font-size:.78rem; color:#aaa; }
@@ -55,14 +38,14 @@ main { max-width:900px; margin:0 auto; padding:24px 16px 200px; }
 .val-msg.warn { background:rgba(192,57,43,.2); color:#F1948A; border:1px solid rgba(192,57,43,.4); }
 .confirm-btn { background:#C8952A; color:#fff; border:none; padding:12px 20px; border-radius:8px; font-family:'DM Sans',sans-serif; font-size:.88rem; font-weight:500; cursor:pointer; white-space:nowrap; -webkit-tap-highlight-color:transparent; }
 .confirm-btn:disabled { background:#555; }
-
 #overlay { display:none; position:fixed; top:0; left:0; right:0; bottom:0; z-index:200; background:rgba(0,0,0,.55); overflow-y:auto; -webkit-overflow-scrolling:touch; }
 #overlay.show { display:block; }
 #ov-panel { background:#fff; margin:12px; border-radius:12px; overflow:hidden; }
 #ov-bar { background:#1A1410; padding:12px 16px; display:-webkit-flex; display:flex; -webkit-align-items:center; align-items:center; -webkit-justify-content:space-between; justify-content:space-between; gap:8px; -webkit-flex-wrap:wrap; flex-wrap:wrap; }
 #ov-bar span { color:#aaa; font-size:.75rem; text-transform:uppercase; letter-spacing:.05em; }
-.ov-btn { border:none; padding:8px 16px; border-radius:6px; font-family:'DM Sans',sans-serif; font-size:.82rem; font-weight:500; cursor:pointer; -webkit-tap-highlight-color:transparent; }
-.ov-btn.print-btn { background:#C8952A; color:#fff; }
+.ov-btn { border:none; padding:9px 16px; border-radius:6px; font-family:'DM Sans',sans-serif; font-size:.82rem; font-weight:500; cursor:pointer; -webkit-tap-highlight-color:transparent; white-space:nowrap; }
+.ov-btn.send-btn { background:#C8952A; color:#fff; }
+.ov-btn.send-btn:disabled { background:#777; }
 .ov-btn.close-btn { background:#333; color:#ccc; }
 #ov-body { padding:22px 18px 18px; font-size:12px; color:#1A1410; }
 .rc-head { text-align:center; border-bottom:2px solid #C8952A; padding-bottom:12px; margin-bottom:14px; }
@@ -98,7 +81,6 @@ main { max-width:900px; margin:0 auto; padding:24px 16px 200px; }
 </head>
 <body>
 
-<!-- Shown only inside FB/WA/Instagram in-app browsers on iOS -->
 <div id="open-banner">
   <p>This menu works best in Safari. Tap below to open it properly:</p>
   <a id="safari-link" href="#">Open in Safari</a>
@@ -141,8 +123,8 @@ main { max-width:900px; margin:0 auto; padding:24px 16px 200px; }
   <div id="ov-panel">
     <div id="ov-bar">
       <span>Your Order</span>
-      <button class="ov-btn print-btn" id="ov-print">Print / Save PDF</button>
-      <button class="ov-btn close-btn" id="ov-close">Close &amp; Amend</button>
+      <button class="ov-btn send-btn" id="ov-send">&#128228; Send / Save PDF</button>
+      <button class="ov-btn close-btn" id="ov-close">&#10005; Close &amp; Amend</button>
     </div>
     <div id="ov-body"></div>
   </div>
@@ -209,7 +191,7 @@ var MENU_DATA = {
           "id": 6,
           "name": "ლობიანი",
           "desc": "ლორით",
-          "price": 35
+          "price": 156
         }
       ]
     },
@@ -237,7 +219,7 @@ var MENU_DATA = {
           "id": 10,
           "name": "კოკა კოლა",
           "desc": "ზერო",
-          "price": 47
+          "price": 123
         }
       ]
     }
@@ -264,73 +246,55 @@ function isDesktop() {
   catch(e) { return false; }
 }
 
-// Detect in-app browsers that strip JS for local files
 function isInAppBrowser() {
   var ua = navigator.userAgent || '';
   return /FBAN|FBAV|Instagram|Twitter|LinkedInApp|Snapchat|MicroMessenger|Line\/|WhatsApp/.test(ua);
 }
 
-// Session state â silently ignored if storage is blocked
 var _state = { q: {}, n: '', g: '2' };
 function saveState() {
   try {
-    _state.q = qty;
-    _state.n = gel('guest-name').value;
-    _state.g = gel('guest-count').value;
+    _state.q = qty; _state.n = gel('guest-name').value; _state.g = gel('guest-count').value;
     sessionStorage.setItem('td3', JSON.stringify(_state));
   } catch(e) {}
 }
 function loadState() {
-  try {
-    var s = JSON.parse(sessionStorage.getItem('td3'));
-    if (s) _state = s;
-  } catch(e) {}
+  try { var s = JSON.parse(sessionStorage.getItem('td3')); if (s) _state = s; } catch(e) {}
   return _state;
 }
 
 // =============================================================================
-// BUILD MENU
-// All card layout set via JS .style â zero CSS class dependency for display.
-// Immune to any @media print bleed or WebView CSS restrictions.
+// BUILD MENU â all layout via inline styles, immune to CSS/WebView issues
 // =============================================================================
 function buildMenu() {
   var saved = loadState();
   var sq = saved.q || {};
-
-  var rn = gel('r-name');
-  if (rn) rn.textContent = MENU_DATA.restaurantName;
+  var rn = gel('r-name'); if (rn) rn.textContent = MENU_DATA.restaurantName;
   document.title = MENU_DATA.restaurantName;
-  var mn = gel('min-note');
-  if (mn) mn.textContent = 'Minimum: ' + MENU_DATA.minimumPerGuest + ' per guest';
-
-  var wrap = gel('menu-wrap');
-  if (!wrap) return;
+  var mn = gel('min-note'); if (mn) mn.textContent = 'Minimum: ' + MENU_DATA.minimumPerGuest + ' per guest';
+  var wrap = gel('menu-wrap'); if (!wrap) return;
   wrap.innerHTML = '';
 
   var cats = MENU_DATA.categories;
   for (var ci = 0; ci < cats.length; ci++) {
     var cat = cats[ci];
-
     var sec = document.createElement('div');
     sec.style.marginBottom = '36px';
-
     var ct = document.createElement('div');
-    ct.style.cssText = 'font-family:\'Playfair Display\',Georgia,serif;font-size:1.2rem;color:#6B4C35;padding-bottom:8px;border-bottom:2px solid #C8952A;margin-bottom:12px;margin-top:36px;';
+    ct.style.cssText = "font-family:'Playfair Display',Georgia,serif;font-size:1.2rem;color:#6B4C35;padding-bottom:8px;border-bottom:2px solid #C8952A;margin-bottom:12px;margin-top:36px;";
     ct.textContent = cat.name;
     sec.appendChild(ct);
 
-    var items = cat.items;
-    for (var ii = 0; ii < items.length; ii++) {
-      var item = items[ii];
+    for (var ii = 0; ii < cat.items.length; ii++) {
+      var item = cat.items[ii];
       var rq = parseInt(sq[item.id]) || 0;
       qty[item.id] = rq;
 
-      // CARD â table-layout:fixed means columns respect their widths strictly
       var card = document.createElement('div');
       card.id = 'c-' + item.id;
       card.style.cssText = 'display:table;table-layout:fixed;width:100%;box-sizing:border-box;background:' + (rq > 0 ? '#FFFCF4' : '#fff') + ';border:1px solid ' + (rq > 0 ? '#C8952A' : '#E2D9CC') + ';border-radius:10px;padding:13px 14px;margin-bottom:10px;';
 
-      // Name + desc cell â takes all remaining space
+      // Name + desc
       var c1 = document.createElement('div');
       c1.style.cssText = 'display:table-cell;vertical-align:middle;width:auto;padding-right:10px;overflow:hidden;';
       var nm = document.createElement('div');
@@ -344,44 +308,32 @@ function buildMenu() {
         c1.appendChild(ds);
       }
 
-      // Price cell â fixed 48px, right-aligned, never shrinks
+      // Price â fixed 48px right-aligned
       var c2 = document.createElement('div');
-      c2.style.cssText = 'display:table-cell;vertical-align:middle;white-space:nowrap;width:48px;min-width:48px;padding-right:14px;font-family:\'Playfair Display\',Georgia,serif;font-size:.95rem;color:#6B4C35;text-align:right;';
+      c2.style.cssText = "display:table-cell;vertical-align:middle;white-space:nowrap;width:48px;min-width:48px;padding-right:14px;font-family:'Playfair Display',Georgia,serif;font-size:.95rem;color:#6B4C35;text-align:right;";
       c2.textContent = fmt(item.price);
 
-      // Qty cell â fixed 110px so -/input/+ always same width
+      // Qty controls â fixed 110px centred
       var c3 = document.createElement('div');
       c3.style.cssText = 'display:table-cell;vertical-align:middle;white-space:nowrap;width:110px;min-width:110px;padding-right:10px;text-align:center;';
-
       var btnStyle = 'width:30px;height:30px;border:1px solid #E2D9CC;background:#fff;border-radius:50%;font-size:1.1rem;cursor:pointer;color:#6B4C35;vertical-align:middle;line-height:1;padding:0;-webkit-tap-highlight-color:transparent;touch-action:manipulation;display:inline-block;';
       var inpStyle = 'width:34px;text-align:center;padding:4px 0;border:1px solid #E2D9CC;border-radius:6px;font-size:.88rem;font-family:inherit;background:#fff;vertical-align:middle;-webkit-appearance:none;margin:0 3px;';
-
       var bm = document.createElement('button');
-      bm.type = 'button'; bm.textContent = '-';
-      bm.setAttribute('data-id', item.id); bm.setAttribute('data-d', '-1');
-      bm.style.cssText = btnStyle;
-
+      bm.type = 'button'; bm.textContent = '-'; bm.setAttribute('data-id', item.id); bm.setAttribute('data-d', '-1'); bm.style.cssText = btnStyle;
       var inp = document.createElement('input');
-      inp.type = 'number'; inp.id = 'q-' + item.id;
-      inp.value = rq; inp.min = '0'; inp.max = '99';
-      inp.setAttribute('data-id', item.id);
-      inp.style.cssText = inpStyle;
-
+      inp.type = 'number'; inp.id = 'q-' + item.id; inp.value = rq; inp.min = '0'; inp.max = '99';
+      inp.setAttribute('data-id', item.id); inp.style.cssText = inpStyle;
       var bp = document.createElement('button');
-      bp.type = 'button'; bp.textContent = '+';
-      bp.setAttribute('data-id', item.id); bp.setAttribute('data-d', '1');
-      bp.style.cssText = btnStyle;
-
+      bp.type = 'button'; bp.textContent = '+'; bp.setAttribute('data-id', item.id); bp.setAttribute('data-d', '1'); bp.style.cssText = btnStyle;
       c3.appendChild(bm); c3.appendChild(inp); c3.appendChild(bp);
 
-      // Total cell â fixed 54px, right-aligned
+      // Row total â fixed 54px right-aligned
       var c4 = document.createElement('div');
       c4.id = 't-' + item.id;
       c4.style.cssText = 'display:table-cell;vertical-align:middle;text-align:right;white-space:nowrap;width:54px;min-width:54px;font-weight:' + (rq > 0 ? '600' : '400') + ';color:' + (rq > 0 ? '#C8952A' : '#8B7355') + ';';
       c4.textContent = rq > 0 ? fmt(rq * item.price) : '-';
 
-      card.appendChild(c1); card.appendChild(c2);
-      card.appendChild(c3); card.appendChild(c4);
+      card.appendChild(c1); card.appendChild(c2); card.appendChild(c3); card.appendChild(c4);
       sec.appendChild(card);
     }
     wrap.appendChild(sec);
@@ -390,13 +342,9 @@ function buildMenu() {
   if (saved.n) { var gn2 = gel('guest-name'); if (gn2) gn2.value = saved.n; }
   if (saved.g) { var gc2 = gel('guest-count'); if (gc2) gc2.value = saved.g; }
 
-  // Delegated listeners on the wrap â one handler for all +/- buttons and inputs
   wrap.addEventListener('click', function(e) {
     var el = e.target || e.srcElement;
-    while (el && el !== wrap) {
-      if (el.getAttribute && el.getAttribute('data-d')) break;
-      el = el.parentNode;
-    }
+    while (el && el !== wrap) { if (el.getAttribute && el.getAttribute('data-d')) break; el = el.parentNode; }
     if (el && el !== wrap) {
       var id = parseInt(el.getAttribute('data-id'));
       var nv = Math.max(0, (qty[id] || 0) + parseInt(el.getAttribute('data-d')));
@@ -404,15 +352,8 @@ function buildMenu() {
       applyQty(id, nv);
     }
   });
-  wrap.addEventListener('change', function(e) {
-    var el = e.target || e.srcElement;
-    if (el && el.getAttribute('data-id')) applyQty(parseInt(el.getAttribute('data-id')), parseInt(el.value) || 0);
-  });
-  wrap.addEventListener('input', function(e) {
-    var el = e.target || e.srcElement;
-    if (el && el.getAttribute('data-id')) applyQty(parseInt(el.getAttribute('data-id')), parseInt(el.value) || 0);
-  });
-
+  wrap.addEventListener('change', function(e) { var el = e.target || e.srcElement; if (el && el.getAttribute('data-id')) applyQty(parseInt(el.getAttribute('data-id')), parseInt(el.value) || 0); });
+  wrap.addEventListener('input',  function(e) { var el = e.target || e.srcElement; if (el && el.getAttribute('data-id')) applyQty(parseInt(el.getAttribute('data-id')), parseInt(el.value) || 0); });
   updateFooter();
 }
 
@@ -420,29 +361,17 @@ function applyQty(id, v) {
   var q = Math.max(0, isNaN(v) ? 0 : v);
   qty[id] = q;
   var inp = gel('q-' + id); if (inp) inp.value = q;
-  var price = 0;
-  var cats = MENU_DATA.categories;
-  for (var i = 0; i < cats.length; i++)
-    for (var j = 0; j < cats[i].items.length; j++)
-      if (cats[i].items[j].id === id) { price = cats[i].items[j].price; break; }
+  var price = 0, cats = MENU_DATA.categories;
+  for (var i = 0; i < cats.length; i++) for (var j = 0; j < cats[i].items.length; j++) if (cats[i].items[j].id === id) { price = cats[i].items[j].price; break; }
   var tot = gel('t-' + id), card = gel('c-' + id);
-  if (q > 0) {
-    tot.textContent = fmt(q * price); tot.style.color = '#C8952A'; tot.style.fontWeight = '600';
-    card.style.background = '#FFFCF4'; card.style.border = '1px solid #C8952A';
-  } else {
-    tot.textContent = '-'; tot.style.color = '#8B7355'; tot.style.fontWeight = '400';
-    card.style.background = '#fff'; card.style.border = '1px solid #E2D9CC';
-  }
+  if (q > 0) { tot.textContent = fmt(q * price); tot.style.color = '#C8952A'; tot.style.fontWeight = '600'; card.style.background = '#FFFCF4'; card.style.border = '1px solid #C8952A'; }
+  else        { tot.textContent = '-';            tot.style.color = '#8B7355'; tot.style.fontWeight = '400'; card.style.background = '#fff';    card.style.border = '1px solid #E2D9CC'; }
   saveState(); updateFooter();
 }
 
 function calcTotals() {
   var sub = 0, ct = 0, cats = MENU_DATA.categories;
-  for (var i = 0; i < cats.length; i++)
-    for (var j = 0; j < cats[i].items.length; j++) {
-      var q = qty[cats[i].items[j].id] || 0;
-      sub += q * cats[i].items[j].price; ct += q;
-    }
+  for (var i = 0; i < cats.length; i++) for (var j = 0; j < cats[i].items.length; j++) { var q = qty[cats[i].items[j].id] || 0; sub += q * cats[i].items[j].price; ct += q; }
   var svc = Math.floor(sub * 0.1);
   return { sub: sub, svc: svc, grand: sub + svc, ct: ct };
 }
@@ -452,26 +381,21 @@ function updateFooter() {
   var guests = parseInt(gel('guest-count').value) || 0;
   var min = guests * MENU_DATA.minimumPerGuest;
   var name = gel('guest-name').value.trim();
-  gel('f-sub').textContent   = fmt(t.sub);
-  gel('f-svc').textContent   = fmt(t.svc);
-  gel('f-grand').textContent = fmt(t.grand);
-  gel('f-ct').textContent    = t.ct === 0 ? 'No items selected' : t.ct + ' item' + (t.ct !== 1 ? 's' : '') + ' selected';
+  gel('f-sub').textContent = fmt(t.sub); gel('f-svc').textContent = fmt(t.svc); gel('f-grand').textContent = fmt(t.grand);
+  gel('f-ct').textContent = t.ct === 0 ? 'No items selected' : t.ct + ' item' + (t.ct !== 1 ? 's' : '') + ' selected';
   var msg = gel('val-msg'), btn = gel('confirm-btn');
-  if      (t.ct === 0)   { msg.textContent = 'Add items to begin';               msg.className = 'val-msg';      btn.disabled = true; }
-  else if (!name)         { msg.textContent = 'Please enter your name';           msg.className = 'val-msg warn'; btn.disabled = true; }
-  else if (guests === 0)  { msg.textContent = 'Please enter number of guests';   msg.className = 'val-msg warn'; btn.disabled = true; }
-  else if (t.sub < min)  { msg.textContent = 'Add ' + fmt(min-t.sub) + ' more (min ' + fmt(min) + ')'; msg.className = 'val-msg warn'; btn.disabled = true; }
-  else                   { msg.textContent = 'Ready â tap to view order';        msg.className = 'val-msg ok';   btn.disabled = false; }
+  if      (t.ct === 0)    { msg.textContent = 'Add items to begin';                                                     msg.className = 'val-msg';      btn.disabled = true;  }
+  else if (!name)          { msg.textContent = 'Please enter your name';                                                 msg.className = 'val-msg warn'; btn.disabled = true;  }
+  else if (guests === 0)   { msg.textContent = 'Please enter number of guests';                                          msg.className = 'val-msg warn'; btn.disabled = true;  }
+  else if (t.sub < min)   { msg.textContent = 'Add ' + fmt(min - t.sub) + ' more (min ' + fmt(min) + ')';              msg.className = 'val-msg warn'; btn.disabled = true;  }
+  else                    { msg.textContent = 'Ready â tap to view order';                                               msg.className = 'val-msg ok';   btn.disabled = false; }
 }
 
 function buildRows() {
   var rows = '', cats = MENU_DATA.categories;
   for (var ci = 0; ci < cats.length; ci++) {
     var catRows = '', items = cats[ci].items;
-    for (var ii = 0; ii < items.length; ii++) {
-      var item = items[ii], q = qty[item.id] || 0;
-      if (q > 0) catRows += '<tr><td>' + item.name + '</td><td class="r">' + q + '</td><td class="r">' + fmt(item.price) + '</td><td class="r">' + fmt(q * item.price) + '</td></tr>';
-    }
+    for (var ii = 0; ii < items.length; ii++) { var item = items[ii], q = qty[item.id] || 0; if (q > 0) catRows += '<tr><td>' + item.name + '</td><td class="r">' + q + '</td><td class="r">' + fmt(item.price) + '</td><td class="r">' + fmt(q * item.price) + '</td></tr>'; }
     if (catRows) rows += '<tr class="rc-cat"><td colspan="4">' + cats[ci].name + '</td></tr>' + catRows;
   }
   return rows;
@@ -481,68 +405,231 @@ function buildOverlayHTML(guestName, guests, dt, t, rows) {
   return '<div class="rc-head"><h2>' + MENU_DATA.restaurantName + '</h2><p>Pre-Order Summary</p></div>' +
     '<div class="rc-meta"><div><div class="rc-gn">' + guestName + '</div><div>' + guests + ' guest' + (parseInt(guests) !== 1 ? 's' : '') + '</div></div><div class="rc-rt">' + dt.date + '<br>' + dt.time + '</div></div>' +
     '<table class="rc-tbl"><thead><tr><th>Item</th><th class="r">Qty</th><th class="r">Price</th><th class="r">Total</th></tr></thead><tbody>' + rows + '</tbody></table>' +
-    '<div class="rc-tots"><table class="rc-ti">' +
-      '<tr><td class="lb">Subtotal</td><td class="vl">' + fmt(t.sub) + '</td></tr>' +
-      '<tr class="svc-r"><td class="lb">Service Charge 10%</td><td class="vl">' + fmt(t.svc) + '</td></tr>' +
-      '<tr class="gnd-r"><td class="lb">Grand Total</td><td class="vl">' + fmt(t.grand) + '</td></tr>' +
-    '</table></div>' +
+    '<div class="rc-tots"><table class="rc-ti"><tr><td class="lb">Subtotal</td><td class="vl">' + fmt(t.sub) + '</td></tr><tr class="svc-r"><td class="lb">Service Charge 10%</td><td class="vl">' + fmt(t.svc) + '</td></tr><tr class="gnd-r"><td class="lb">Grand Total</td><td class="vl">' + fmt(t.grand) + '</td></tr></table></div>' +
     '<div class="rc-foot">Prices Include VAT 18%<br>Theory Dining: 23 Pushkin St. Tbilisi &nbsp;|&nbsp; 595-88-88-23</div>';
 }
 
 function buildDesktopPage(guestName, guests, dt, t, rows) {
   var css = '*{margin:0;padding:0;box-sizing:border-box;}body{font-family:Georgia,serif;color:#1A1410;background:#FAF7F2;}.page{background:#fff;max-width:700px;margin:28px auto;border-radius:12px;overflow:hidden;box-shadow:0 6px 32px rgba(0,0,0,.1);}.toolbar{background:#1A1410;padding:12px 22px;display:flex;align-items:center;justify-content:space-between;gap:10px;}.toolbar span{color:#aaa;font-size:.75rem;letter-spacing:.05em;text-transform:uppercase;}.tb-btn{background:#C8952A;color:#fff;border:none;padding:8px 18px;border-radius:6px;font-family:Georgia,serif;font-size:.85rem;cursor:pointer;}.receipt{padding:28px 32px;}h1{font-size:24px;letter-spacing:.03em;}.tag{font-size:8px;text-transform:uppercase;letter-spacing:.14em;color:#8B7355;margin-top:2px;margin-bottom:12px;}hr{border:none;border-top:2px solid #C8952A;margin-bottom:14px;}.meta{display:flex;justify-content:space-between;margin-bottom:14px;font-size:11px;color:#555;}.gn{font-size:15px;font-weight:bold;color:#1A1410;margin-bottom:2px;}.rt{text-align:right;line-height:1.7;}table{width:100%;border-collapse:collapse;margin-bottom:14px;}thead tr{background:#1A1410;}thead th{color:#E8B84B;padding:6px 9px;font-size:8.5px;text-transform:uppercase;letter-spacing:.06em;font-weight:normal;text-align:left;}thead th.r{text-align:right;}tbody tr{border-bottom:1px solid #eee;}tbody tr:nth-child(even){background:#FAF7F2;}tbody td{padding:6px 9px;font-size:11px;}.ch td{background:#F5EFE6;color:#6B4C35;font-weight:bold;font-size:8.5px;text-transform:uppercase;letter-spacing:.05em;padding:4px 9px;border-top:2px solid #E2D9CC;}.r{text-align:right;}.tw{text-align:right;margin-bottom:18px;}.tt{display:inline-table;border-collapse:collapse;min-width:220px;}.tt td{padding:4px 9px;font-size:11px;}.tt .lb{color:#555;}.tt .vl{text-align:right;}.tt .sl td{border-top:1px solid #ddd;color:#555;}.tt .gl td{border-top:2px solid #C8952A;font-size:14px;font-weight:bold;padding-top:7px;}.foot{border-top:1px solid #E2D9CC;padding-top:9px;text-align:center;font-size:9px;color:#8B7355;line-height:1.9;}@media print{*{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;}body{background:#fff;}.page{margin:0;border-radius:0;box-shadow:none;}.toolbar{display:none;}@page{margin:10mm;size:A4;}}';
-  return '<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>' + MENU_DATA.restaurantName + ' - Order</title><style>' + css + '</style></head><body><div class="page"><div class="toolbar"><span>Order â ' + guestName + '</span><button class="tb-btn" onclick="window.print()">Print / Save as PDF</button></div><div class="receipt"><h1>' + MENU_DATA.restaurantName + '</h1><div class="tag">Pre-Order Summary</div><hr><div class="meta"><div><div class="gn">' + guestName + '</div><div>' + guests + ' guest' + (parseInt(guests)!==1?'s':'') + '</div></div><div class="rt">' + dt.date + '<br>' + dt.time + '</div></div><table><thead><tr><th>Item</th><th class="r">Qty</th><th class="r">Price</th><th class="r">Total</th></tr></thead><tbody>' + rows + '</tbody></table><div class="tw"><table class="tt"><tr><td class="lb">Subtotal</td><td class="vl">' + fmt(t.sub) + '</td></tr><tr class="sl"><td class="lb">Service Charge 10%</td><td class="vl">' + fmt(t.svc) + '</td></tr><tr class="gl"><td class="lb">Grand Total</td><td class="vl">' + fmt(t.grand) + '</td></tr></table></div><div class="foot">Prices Include VAT 18%<br>Theory Dining: 23 Pushkin St. Tbilisi &nbsp;|&nbsp; 595-88-88-23</div></div></div></body></html>';
+  return '<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>' + MENU_DATA.restaurantName + ' - Order</title><style>' + css + '</style></head><body><div class="page"><div class="toolbar"><span>Order - ' + guestName + '</span><button class="tb-btn" onclick="window.print()">Print / Save as PDF</button></div><div class="receipt"><h1>' + MENU_DATA.restaurantName + '</h1><div class="tag">Pre-Order Summary</div><hr><div class="meta"><div><div class="gn">' + guestName + '</div><div>' + guests + ' guest' + (parseInt(guests) !== 1 ? 's' : '') + '</div></div><div class="rt">' + dt.date + '<br>' + dt.time + '</div></div><table><thead><tr><th>Item</th><th class="r">Qty</th><th class="r">Price</th><th class="r">Total</th></tr></thead><tbody>' + rows + '</tbody></table><div class="tw"><table class="tt"><tr><td class="lb">Subtotal</td><td class="vl">' + fmt(t.sub) + '</td></tr><tr class="sl"><td class="lb">Service Charge 10%</td><td class="vl">' + fmt(t.svc) + '</td></tr><tr class="gl"><td class="lb">Grand Total</td><td class="vl">' + fmt(t.grand) + '</td></tr></table></div><div class="foot">Prices Include VAT 18%<br>Theory Dining: 23 Pushkin St. Tbilisi &nbsp;|&nbsp; 595-88-88-23</div></div></div></body></html>';
 }
 
 // =============================================================================
-// INIT â everything that touches the DOM goes here, called after DOM is ready
+// GENERATE PDF using jsPDF and trigger OS share sheet or download
+// iOS Safari 15+, Android Chrome: navigator.share() -> share sheet immediately
+// Desktop / fallback: downloads the PDF file directly
+// =============================================================================
+function generateAndSharePDF(guestName, guests, dt, t) {
+  var btn = gel('ov-send');
+  if (btn) { btn.textContent = 'Preparingâ¦'; btn.disabled = true; }
+
+  function resetBtn() {
+    if (btn) { btn.textContent = 'ð¤ Send / Save PDF'; btn.disabled = false; }
+  }
+
+  // jsPDF loaded from CDN â if offline or blocked, fall back to window.print()
+  var jsPDFLib = (window.jspdf && window.jspdf.jsPDF) || window.jsPDF;
+  if (!jsPDFLib) {
+    window.print();
+    resetBtn();
+    return;
+  }
+
+  try {
+    var doc = new jsPDFLib({ unit: 'mm', format: 'a4', orientation: 'portrait' });
+    var lm = 18, rm = 192, y = 22;
+    var cGold = [200, 149, 42], cInk = [26, 20, 16], cBrown = [107, 76, 53], cMuted = [139, 115, 85];
+
+    // ââ Restaurant header ââ
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(20);
+    doc.setTextColor(cInk[0], cInk[1], cInk[2]);
+    doc.text(MENU_DATA.restaurantName, 105, y, { align: 'center' });
+    y += 7;
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(8);
+    doc.setTextColor(cMuted[0], cMuted[1], cMuted[2]);
+    doc.text('PRE-ORDER SUMMARY', 105, y, { align: 'center' });
+    y += 5;
+    doc.setDrawColor(cGold[0], cGold[1], cGold[2]);
+    doc.setLineWidth(0.6);
+    doc.line(lm, y, rm, y);
+    y += 8;
+
+    // ââ Guest info ââ
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(12);
+    doc.setTextColor(cInk[0], cInk[1], cInk[2]);
+    doc.text(guestName, lm, y);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(9);
+    doc.setTextColor(cMuted[0], cMuted[1], cMuted[2]);
+    doc.text(dt.date + '  ' + dt.time, rm, y, { align: 'right' });
+    y += 5;
+    doc.text(guests + ' guest' + (parseInt(guests) !== 1 ? 's' : ''), lm, y);
+    y += 9;
+
+    // ââ Table header ââ
+    doc.setFillColor(cInk[0], cInk[1], cInk[2]);
+    doc.rect(lm, y - 4.5, rm - lm, 7, 'F');
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(8);
+    doc.setTextColor(cGold[0], cGold[1], cGold[2]);
+    doc.text('ITEM',  lm + 2, y);
+    doc.text('QTY',   150, y, { align: 'right' });
+    doc.text('PRICE', 167, y, { align: 'right' });
+    doc.text('TOTAL', rm - 1, y, { align: 'right' });
+    y += 7;
+
+    // ââ Order rows ââ
+    var rowAlt = false;
+    var cats = MENU_DATA.categories;
+    for (var ci = 0; ci < cats.length; ci++) {
+      var catHasItems = false;
+      for (var ii = 0; ii < cats[ci].items.length; ii++) { if (qty[cats[ci].items[ii].id] > 0) { catHasItems = true; break; } }
+      if (!catHasItems) continue;
+
+      // Category label
+      doc.setFillColor(245, 239, 230);
+      doc.rect(lm, y - 3.5, rm - lm, 6, 'F');
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(7.5);
+      doc.setTextColor(cBrown[0], cBrown[1], cBrown[2]);
+      doc.text(cats[ci].name.toUpperCase(), lm + 2, y);
+      y += 6;
+
+      for (var ii2 = 0; ii2 < cats[ci].items.length; ii2++) {
+        var item = cats[ci].items[ii2];
+        var q = qty[item.id] || 0;
+        if (!q) continue;
+
+        if (rowAlt) { doc.setFillColor(250, 247, 242); doc.rect(lm, y - 3.5, rm - lm, 6, 'F'); }
+        rowAlt = !rowAlt;
+
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(9);
+        doc.setTextColor(cInk[0], cInk[1], cInk[2]);
+        var name = item.name.length > 44 ? item.name.substring(0, 42) + '...' : item.name;
+        doc.text(name,             lm + 2, y);
+        doc.text(String(q),        150,    y, { align: 'right' });
+        doc.text(fmt(item.price),  167,    y, { align: 'right' });
+        doc.text(fmt(q * item.price), rm - 1, y, { align: 'right' });
+        y += 6;
+        if (y > 260) { doc.addPage(); y = 20; rowAlt = false; }
+      }
+    }
+
+    // ââ Totals ââ
+    y += 4;
+    var tx = rm - 72;
+    doc.setDrawColor(220, 220, 220); doc.setLineWidth(0.3);
+    doc.line(tx, y, rm, y); y += 5;
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.setTextColor(cMuted[0], cMuted[1], cMuted[2]);
+    doc.text('Subtotal',           tx + 2, y); doc.text(fmt(t.sub),   rm - 1, y, { align: 'right' }); y += 5;
+    doc.text('Service Charge 10%', tx + 2, y); doc.text(fmt(t.svc),   rm - 1, y, { align: 'right' }); y += 2;
+    doc.setDrawColor(cGold[0], cGold[1], cGold[2]); doc.setLineWidth(0.5);
+    doc.line(tx, y, rm, y); y += 5;
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(11); doc.setTextColor(cInk[0], cInk[1], cInk[2]);
+    doc.text('Grand Total',        tx + 2, y); doc.text(fmt(t.grand), rm - 1, y, { align: 'right' }); y += 10;
+
+    // ââ Footer ââ
+    doc.setDrawColor(226, 217, 204); doc.setLineWidth(0.3);
+    doc.line(lm, y, rm, y); y += 5;
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(8); doc.setTextColor(cMuted[0], cMuted[1], cMuted[2]);
+    doc.text('Prices Include VAT 18%', 105, y, { align: 'center' }); y += 4.5;
+    doc.text('Theory Dining: 23 Pushkin St. Tbilisi  |  595-88-88-23', 105, y, { align: 'center' });
+
+    // ââ Share or download ââ
+    var pdfBlob = doc.output('blob');
+    var fileName = 'Order-' + guestName.replace(/\s+/g, '-') + '-' + dt.date + '.pdf';
+
+    // Web Share API: iOS Safari 15+ and Android Chrome support file sharing
+    // This immediately opens the native OS share sheet
+    if (navigator.share && navigator.canShare) {
+      var file = new File([pdfBlob], fileName, { type: 'application/pdf' });
+      if (navigator.canShare({ files: [file] })) {
+        navigator.share({
+          files: [file],
+          title: MENU_DATA.restaurantName + ' - Order',
+          text: 'Order for ' + guestName
+        }).then(function() {
+          resetBtn();
+        }).catch(function(err) {
+          // User cancelled share â not an error
+          if (err.name !== 'AbortError') { triggerDownload(pdfBlob, fileName); }
+          resetBtn();
+        });
+        return; // wait for share promise
+      }
+    }
+
+    // Fallback: download the PDF directly (desktop browsers, older iOS)
+    triggerDownload(pdfBlob, fileName);
+    resetBtn();
+
+  } catch(e) {
+    console.error('PDF generation error:', e);
+    window.print();
+    resetBtn();
+  }
+}
+
+function triggerDownload(blob, fileName) {
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url; a.download = fileName; a.style.display = 'none';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  setTimeout(function() { URL.revokeObjectURL(url); }, 5000);
+}
+
+// =============================================================================
+// INIT â all DOM access here, after DOM is ready (fixes iOS local file crash)
 // =============================================================================
 function init() {
-  // ââ In-app browser detection & escape banner ââ
-  // When someone opens this file inside FB Messenger / WhatsApp on iOS,
-  // those apps use a locked-down WebView. The banner tells the user to
-  // open it in Safari instead. The safari-link uses the current URL so
-  // once hosted online it will open in Safari automatically.
+  // In-app browser banner (FB Messenger, WhatsApp, Instagram)
   if (isInAppBrowser()) {
     var banner = gel('open-banner');
     if (banner) {
       banner.style.display = 'block';
-      // Push content down so banner doesn't cover header
       var hdr = document.querySelector('header');
       if (hdr) hdr.style.top = banner.offsetHeight + 'px';
     }
-    // Set the link to current page URL (works when hosted; local file shows tip instead)
     var link = gel('safari-link');
     if (link && window.location.href.indexOf('http') === 0) {
-      link.href = window.location.href;
-      link.target = '_blank'; // triggers Safari on iOS
+      link.href = window.location.href; link.target = '_blank';
     } else if (link) {
-      link.textContent = 'Tap the \u22EE or Share button \u2192 Open in Browser';
-      link.href = '#';
-      link.style.background = '#555';
+      link.textContent = 'Tap menu \u22EE or Share \u2192 Open in Browser';
+      link.href = '#'; link.style.background = '#555';
     }
   }
 
   var gc = gel('guest-count');
   var gn = gel('guest-name');
   var cb = gel('confirm-btn');
-  var op = gel('ov-print');
+  var os = gel('ov-send');
   var oc = gel('ov-close');
   var ov = gel('overlay');
 
   if (gc) gc.addEventListener('input', function() { saveState(); updateFooter(); });
   if (gn) gn.addEventListener('input', function() { saveState(); updateFooter(); });
 
+  // Store current order data so the Send button can access it
+  var _orderData = null;
+
   if (cb) cb.addEventListener('click', function() {
-    var t = calcTotals();
+    var t         = calcTotals();
     var guestName = (gel('guest-name').value || '').trim() || 'Guest';
     var guests    = gel('guest-count').value;
     var dt        = getNow();
     var rows      = buildRows();
+
     if (isDesktop()) {
+      // Desktop: open new tab â print dialog with Save as PDF option
       var win = window.open('', '_blank');
       if (win) { win.document.open(); win.document.write(buildDesktopPage(guestName, guests, dt, t, rows)); win.document.close(); }
     } else {
+      // Mobile: show order summary overlay, Send button generates PDF + share sheet
+      _orderData = { guestName: guestName, guests: guests, dt: dt, t: t };
       var ob = gel('ov-body');
       if (ob) ob.innerHTML = buildOverlayHTML(guestName, guests, dt, t, rows);
       if (ov) { ov.className = 'show'; ov.scrollTop = 0; }
@@ -550,11 +637,14 @@ function init() {
     }
   });
 
-  if (op) op.addEventListener('click', function() { window.print(); });
-  if (oc) oc.addEventListener('click', function() { if (ov) ov.className = ''; });
-  if (ov) ov.addEventListener('click', function(e) {
-    if ((e.target || e.srcElement) === this) this.className = '';
+  if (os) os.addEventListener('click', function() {
+    if (_orderData) {
+      generateAndSharePDF(_orderData.guestName, _orderData.guests, _orderData.dt, _orderData.t);
+    }
   });
+
+  if (oc) oc.addEventListener('click', function() { if (ov) ov.className = ''; });
+  if (ov) ov.addEventListener('click', function(e) { if ((e.target || e.srcElement) === this) this.className = ''; });
 
   buildMenu();
 }
