@@ -48,6 +48,8 @@ main { max-width:900px; margin:0 auto; padding:24px 16px 200px; }
 .ov-btn.send-btn:disabled { background:#777; }
 .ov-btn.close-btn { background:#333; color:#ccc; }
 #ov-body { padding:22px 18px 18px; font-size:12px; color:#1A1410; }
+#ov-footer { padding:12px 16px 16px; display:flex; justify-content:center; }
+#ov-footer .send-btn { width:100%; font-size:1rem; padding:14px; border-radius:8px; }
 .rc-head { text-align:center; border-bottom:2px solid #C8952A; padding-bottom:12px; margin-bottom:14px; }
 .rc-head h2 { font-family:'Noto Sans Georgian','Playfair Display',serif; font-size:20px; }
 .rc-head p { color:#8B7355; font-size:8px; text-transform:uppercase; letter-spacing:.1em; margin-top:2px; }
@@ -123,10 +125,12 @@ main { max-width:900px; margin:0 auto; padding:24px 16px 200px; }
   <div id="ov-panel">
     <div id="ov-bar">
       <span>შეკვეთა</span>
-      <button class="ov-btn send-btn" id="ov-send">&#128228; გაგზავნა / PDF შენახვა</button>
       <button class="ov-btn close-btn" id="ov-close">&#10005; დახურვა და შეცვლა</button>
     </div>
     <div id="ov-body"></div>
+    <div id="ov-footer">
+      <button class="ov-btn send-btn" id="ov-send">&#128228; გაგზავნა / PDF შენახვა</button>
+    </div>
   </div>
 </div>
 
@@ -700,7 +704,7 @@ function buildRows() {
   for (var ci = 0; ci < cats.length; ci++) {
     var catRows = '', items = cats[ci].items;
     for (var ii = 0; ii < items.length; ii++) { var item = items[ii], q = qty[item.id] || 0; if (q > 0) catRows += '<tr><td>' + item.name + '</td><td class="r">' + q + '</td><td class="r">' + fmt(item.price) + '</td><td class="r">' + fmt(q * item.price) + '</td></tr>'; }
-    if (catRows) rows += '<tr class="rc-cat"><td colspan="4">' + cats[ci].name + '</td></tr>' + catRows;
+    if (catRows) rows += '<tr class="cat-row"><td colspan="4">' + cats[ci].name + '</td></tr>' + catRows;
   }
   return rows;
 }
@@ -714,209 +718,113 @@ function buildOverlayHTML(guestName, guests, dt, t, rows) {
 }
 
 function buildDesktopPage(guestName, guests, dt, t, rows) {
-  var css = '*{margin:0;padding:0;box-sizing:border-box;}body{font-family:\'Noto Sans Georgian\',Georgia,sans-serif;color:#1A1410;background:#FAF7F2;}.page{background:#fff;max-width:700px;margin:28px auto;border-radius:12px;overflow:hidden;box-shadow:0 6px 32px rgba(0,0,0,.1);}.toolbar{background:#1A1410;padding:12px 22px;display:flex;align-items:center;justify-content:space-between;gap:10px;}.toolbar span{color:#aaa;font-size:.75rem;letter-spacing:.05em;text-transform:uppercase;}.tb-btn{background:#C8952A;color:#fff;border:none;padding:8px 18px;border-radius:6px;font-family:\'Noto Sans Georgian\',Georgia,sans-serif;font-size:.85rem;cursor:pointer;}.receipt{padding:28px 32px;}h1{font-size:24px;letter-spacing:.03em;}.tag{font-size:8px;text-transform:uppercase;letter-spacing:.14em;color:#8B7355;margin-top:2px;margin-bottom:12px;}hr{border:none;border-top:2px solid #C8952A;margin-bottom:14px;}.meta{display:flex;justify-content:space-between;margin-bottom:14px;font-size:11px;color:#555;}.gn{font-size:15px;font-weight:bold;color:#1A1410;margin-bottom:2px;}.rt{text-align:right;line-height:1.7;}table{width:100%;border-collapse:collapse;margin-bottom:14px;}thead tr{background:#1A1410;}thead th{color:#E8B84B;padding:6px 9px;font-size:8.5px;text-transform:uppercase;letter-spacing:.06em;font-weight:normal;text-align:left;}thead th.r{text-align:right;}tbody tr{border-bottom:1px solid #eee;}tbody tr:nth-child(even){background:#FAF7F2;}tbody td{padding:6px 9px;font-size:11px;}.ch td{background:#F5EFE6;color:#6B4C35;font-weight:bold;font-size:8.5px;text-transform:uppercase;letter-spacing:.05em;padding:4px 9px;border-top:2px solid #E2D9CC;}.r{text-align:right;}.tw{text-align:right;margin-bottom:18px;}.tt{display:inline-table;border-collapse:collapse;min-width:220px;}.tt td{padding:4px 9px;font-size:11px;}.tt .lb{color:#555;}.tt .vl{text-align:right;}.tt .sl td{border-top:1px solid #ddd;color:#555;}.tt .gl td{border-top:2px solid #C8952A;font-size:14px;font-weight:bold;padding-top:7px;}.foot{border-top:1px solid #E2D9CC;padding-top:9px;text-align:center;font-size:9px;color:#8B7355;line-height:1.9;}@media print{*{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;}body{background:#fff;}.page{margin:0;border-radius:0;box-shadow:none;}.toolbar{display:none;}@page{margin:10mm;size:A4;}}';
-  return '<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Georgian:wght@400;600;700&display=swap" rel="stylesheet"><title>' + MENU_DATA.restaurantName + ' - Order</title><style>' + css + '</style></head><body><div class="page"><div class="toolbar"><span>შეკვეთა - ' + guestName + '</span><button class="tb-btn" onclick="window.print()">დაბეჭდე / შეინახე PDF</button></div><div class="receipt"><h1>' + MENU_DATA.restaurantName + '</h1><div class="tag">შეკვეთა</div><hr><div class="meta"><div><div class="gn">' + guestName + '</div><div>' + guests + ' სტუმარი' + '</div></div><div class="rt">' + dt.date + '<br>' + dt.time + '</div></div><table><thead><tr><th>დასახელება</th><th class="r">რაოდენობა</th><th class="r">ფასი</th><th class="r">ჯამი</th></tr></thead><tbody>' + rows + '</tbody></table><div class="tw"><table class="tt"><tr><td class="lb">ჯამი</td><td class="vl">' + fmt(t.sub) + '</td></tr><tr class="sl"><td class="lb">მომსახურება 10%</td><td class="vl">' + fmt(t.svc) + '</td></tr><tr class="gl"><td class="lb">მთლიანად</td><td class="vl">' + fmt(t.grand) + '</td></tr></table></div><div class="foot">ფასები მოიცავს დღგ-ს 18%<br>თეორია დაინინგი, პუშკინის ქ. 23, თბილისი, ტელ.: 595-88-88-23</div></div></div></body></html>';
+  var css = [
+    '*{margin:0;padding:0;box-sizing:border-box;}',
+    'body{font-family:\'Noto Sans Georgian\',Georgia,sans-serif;color:#1A1410;background:#FAF7F2;}',
+    '.page{background:#fff;max-width:700px;margin:0 auto;}',
+    /* Toolbar — always visible, not hidden on print */
+    '.toolbar{background:#1A1410;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;gap:10px;position:sticky;top:0;z-index:10;}',
+    '.toolbar span{color:#aaa;font-size:.75rem;letter-spacing:.04em;}',
+    '.back-btn{background:transparent;color:#aaa;border:1px solid #555;padding:10px 16px;border-radius:8px;font-family:\'Noto Sans Georgian\',Georgia,sans-serif;font-size:.9rem;cursor:pointer;}',
+    '@media (hover:hover) and (pointer:fine) and (min-width:900px){.back-btn{display:none;}}',
+    /* Big share button — easy to tap on mobile */
+    '.tb-btn{background:#C8952A;color:#fff;border:none;padding:12px 24px;border-radius:8px;font-family:\'Noto Sans Georgian\',Georgia,sans-serif;font-size:1rem;font-weight:600;cursor:pointer;white-space:nowrap;}',
+    '.receipt{padding:24px 20px;}',
+    'h1{font-size:22px;letter-spacing:.03em;text-align:center;}',
+    '.tag{font-size:8px;text-transform:uppercase;letter-spacing:.14em;color:#8B7355;margin-top:2px;margin-bottom:10px;text-align:center;}',
+    'hr{border:none;border-top:2px solid #C8952A;margin-bottom:14px;}',
+    '.meta{display:flex;justify-content:space-between;margin-bottom:14px;font-size:11px;color:#555;}',
+    '.gn{font-size:14px;font-weight:bold;color:#1A1410;margin-bottom:2px;}',
+    '.rt{text-align:right;line-height:1.7;}',
+    'table{width:100%;border-collapse:collapse;margin-bottom:14px;}',
+    'thead tr{background:#1A1410;}',
+    'thead th{color:#E8B84B;padding:7px 8px;font-size:8px;text-transform:uppercase;letter-spacing:.06em;font-weight:600;text-align:left;}',
+    'thead th.r{text-align:right;}',
+    'tbody tr{border-bottom:1px solid #eee;}',
+    'tbody td{padding:7px 8px;font-size:11px;}',
+    '.cat-row td{background:#F5E6B8;color:#1A1410;font-weight:bold;font-size:10px;padding:7px 8px;}',
+    '.r{text-align:right;}',
+    '.tw{text-align:right;margin-bottom:18px;}',
+    '.tt{display:inline-table;border-collapse:collapse;min-width:220px;}',
+    '.tt td{padding:5px 8px;font-size:11px;}',
+    '.tt .lb{color:#555;}',
+    '.tt .vl{text-align:right;}',
+    '.tt .sl td{border-top:1px solid #ddd;color:#555;}',
+    '.tt .gl td{border-top:2px solid #C8952A;font-size:14px;font-weight:bold;padding-top:8px;}',
+    '.foot{border-top:1px solid #E2D9CC;padding-top:9px;text-align:center;font-size:9px;color:#8B7355;line-height:1.9;margin-top:4px;}',
+    '@media print{',
+    '  *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;}',
+    '  body{background:#fff;}',
+    '  .toolbar{display:none;}',
+    '  .page{max-width:100%;}',
+    '  @page{margin:10mm;size:A4;}',
+    '}'
+  ].join('');
+
+  var toolbar = '<div class="toolbar">'
+    + '<button class="back-btn" onclick="history.back()">← მენიუზე დაბრუნება</button>'
+    + '<button class="tb-btn" onclick="window.print()">📤 შენახვა / გაგზავნა</button>'
+    + '</div>';
+
+  var receipt = '<div class="receipt">'
+    + '<h1>' + MENU_DATA.restaurantName + '</h1>'
+    + '<div class="tag">შეკვეთა</div>'
+    + '<hr>'
+    + '<div class="meta"><div><div class="gn">' + guestName + '</div><div>' + guests + ' სტუმარი</div></div>'
+    + '<div class="rt">' + dt.date + '<br>' + dt.time + '</div></div>'
+    + '<table><thead><tr><th>დასახელება</th><th class="r">რაოდ.</th><th class="r">ფასი</th><th class="r">ჯამი</th></tr></thead>'
+    + '<tbody>' + rows + '</tbody></table>'
+    + '<div class="tw"><table class="tt">'
+    + '<tr><td class="lb">ჯამი</td><td class="vl">' + fmt(t.sub) + '</td></tr>'
+    + '<tr class="sl"><td class="lb">მომსახურება 10%</td><td class="vl">' + fmt(t.svc) + '</td></tr>'
+    + '<tr class="gl"><td class="lb">მთლიანად</td><td class="vl">' + fmt(t.grand) + '</td></tr>'
+    + '</table></div>'
+    + '<div class="foot">ფასები მოიცავს დღგ-ს 18%<br>თეორია დაინინგი, პუშკინის ქ. 23, თბილისი, ტელ.: 595-88-88-23</div>'
+    + '</div>';
+
+  return '<!DOCTYPE html><html><head>'
+    + '<meta charset="UTF-8">'
+    + '<meta name="viewport" content="width=device-width,initial-scale=1">'
+    + '<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Georgian:wght@400;600;700&display=swap" rel="stylesheet">'
+    + '<title>' + MENU_DATA.restaurantName + ' - შეკვეთა</title>'
+    + '<style>' + css + '</style>'
+    + '</head><body>'
+    + '<div class="page">' + toolbar + receipt + '</div>'
+    + '</body></html>';
 }
 
 // =============================================================================
-// GENERATE PDF using jsPDF and trigger OS share sheet or download
-// iOS Safari 15+, Android Chrome: navigator.share() -> share sheet immediately
-// Desktop / fallback: downloads the PDF file directly
-//
-// FONT STRATEGY: fetch Noto Sans Georgian TTF from Google Fonts CDN and embed
-// it directly into the PDF. This is the only reliable way to render Georgian
-// on iOS — the PDF must carry its own font, it cannot rely on system fallbacks.
+// SHARE RECEIPT
+// 1. Build the receipt as an HTML blob file
+// 2. On Android/iOS: use Web Share API to open native share sheet
+//    → user picks WhatsApp, Telegram, Email, Drive, etc.
+// 3. Fallback: write receipt into current page, user taps print button
 // =============================================================================
-
-// Cache the font base64 after first fetch so repeat PDF generations are instant
-var _cachedFontB64 = null;
-
 function generateAndSharePDF(guestName, guests, dt, t) {
-  var btn = gel('ov-send');
-  if (btn) { btn.textContent = 'იტვირთება…'; btn.disabled = true; }
+  saveState();
+  var rows = buildRows();
+  var html = buildDesktopPage(guestName, guests, dt, t, rows);
+  var fileName = 'Order-' + guestName.replace(/\s+/g,'-') + '-' + dt.date + '.html';
 
-  function resetBtn() {
-    if (btn) { btn.textContent = '📤 გაგზავნა / PDF შენახვა'; btn.disabled = false; }
-  }
-
-  var jsPDFLib = (window.jspdf && window.jspdf.jsPDF) || window.jsPDF;
-  if (!jsPDFLib) { window.print(); resetBtn(); return; }
-
-  // Fetch Noto Sans Georgian TTF (regular + bold weights), embed into PDF
-  // Using two weights so bold headings look correct too
-  var FONT_URL_REGULAR = 'https://fonts.gstatic.com/s/notosansgeorgian/v43/PlIaFke5O6RzLfvNNVSivR09_KvYSoac.ttf';
-  var FONT_URL_BOLD    = 'https://fonts.gstatic.com/s/notosansgeorgian/v43/PlIaFke5O6RzLfvNNVSivR09_KvYSoWc.ttf';
-
-  function fetchAsBase64(url) {
-    return fetch(url)
-      .then(function(r) { return r.arrayBuffer(); })
-      .then(function(buf) {
-        var bytes = new Uint8Array(buf);
-        var binary = '';
-        for (var i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
-        return btoa(binary);
-      });
-  }
-
-  function buildAndSharePDF(fontRegB64, fontBoldB64) {
-    try {
-      var doc = new jsPDFLib({ unit: 'mm', format: 'a4', orientation: 'portrait' });
-
-      // Register Noto Sans Georgian so all Georgian glyphs are embedded in the PDF
-      if (fontRegB64) {
-        doc.addFileToVFS('NotoSansGeorgian-Regular.ttf', fontRegB64);
-        doc.addFont('NotoSansGeorgian-Regular.ttf', 'NotoGeo', 'normal');
-      }
-      if (fontBoldB64) {
-        doc.addFileToVFS('NotoSansGeorgian-Bold.ttf', fontBoldB64);
-        doc.addFont('NotoSansGeorgian-Bold.ttf', 'NotoGeo', 'bold');
-      }
-
-      // Use embedded font everywhere; fall back to helvetica only for numbers/ASCII
-      var F = fontRegB64 ? 'NotoGeo' : 'helvetica';
-      var lm = 18, rm = 192, y = 22;
-      var cGold = [200, 149, 42], cInk = [26, 20, 16], cBrown = [107, 76, 53], cMuted = [139, 115, 85];
-
-      // ── Restaurant header ──
-      doc.setFont(F, 'bold');
-      doc.setFontSize(20);
-      doc.setTextColor(cInk[0], cInk[1], cInk[2]);
-      doc.text(MENU_DATA.restaurantName, 105, y, { align: 'center' });
-      y += 7;
-      doc.setFont(F, 'normal');
-      doc.setFontSize(8);
-      doc.setTextColor(cMuted[0], cMuted[1], cMuted[2]);
-      doc.text('შეკვეთა', 105, y, { align: 'center' });
-      y += 5;
-      doc.setDrawColor(cGold[0], cGold[1], cGold[2]);
-      doc.setLineWidth(0.6);
-      doc.line(lm, y, rm, y);
-      y += 8;
-
-      // ── Guest info ──
-      doc.setFont(F, 'bold');
-      doc.setFontSize(12);
-      doc.setTextColor(cInk[0], cInk[1], cInk[2]);
-      doc.text(guestName, lm, y);
-      doc.setFont(F, 'normal');
-      doc.setFontSize(9);
-      doc.setTextColor(cMuted[0], cMuted[1], cMuted[2]);
-      doc.text(dt.date + '  ' + dt.time, rm, y, { align: 'right' });
-      y += 5;
-      doc.text(guests + ' სტუმარი', lm, y);
-      y += 9;
-
-      // ── Table header ──
-      doc.setFillColor(cInk[0], cInk[1], cInk[2]);
-      doc.rect(lm, y - 4.5, rm - lm, 7, 'F');
-      doc.setFont(F, 'bold');
-      doc.setFontSize(8);
-      doc.setTextColor(cGold[0], cGold[1], cGold[2]);
-      doc.text('დასახელება', lm + 2, y);
-      doc.text('რაოდ.', 150, y, { align: 'right' });
-      doc.text('ფასი',  167, y, { align: 'right' });
-      doc.text('ჯამი',  rm - 1, y, { align: 'right' });
-      y += 7;
-
-      // ── Order rows ──
-      var rowAlt = false;
-      var cats = MENU_DATA.categories;
-      for (var ci = 0; ci < cats.length; ci++) {
-        var catHasItems = false;
-        for (var ii = 0; ii < cats[ci].items.length; ii++) { if (qty[cats[ci].items[ii].id] > 0) { catHasItems = true; break; } }
-        if (!catHasItems) continue;
-
-        // Category label
-        doc.setFillColor(245, 239, 230);
-        doc.rect(lm, y - 3.5, rm - lm, 6, 'F');
-        doc.setFont(F, 'bold');
-        doc.setFontSize(7.5);
-        doc.setTextColor(cBrown[0], cBrown[1], cBrown[2]);
-        doc.text(cats[ci].name.toUpperCase(), lm + 2, y);
-        y += 6;
-
-        for (var ii2 = 0; ii2 < cats[ci].items.length; ii2++) {
-          var item = cats[ci].items[ii2];
-          var q = qty[item.id] || 0;
-          if (!q) continue;
-
-          if (rowAlt) { doc.setFillColor(250, 247, 242); doc.rect(lm, y - 3.5, rm - lm, 6, 'F'); }
-          rowAlt = !rowAlt;
-
-          doc.setFont(F, 'normal');
-          doc.setFontSize(9);
-          doc.setTextColor(cInk[0], cInk[1], cInk[2]);
-          var iname = item.name.length > 44 ? item.name.substring(0, 42) + '...' : item.name;
-          doc.text(iname,               lm + 2, y);
-          doc.text(String(q),           150,    y, { align: 'right' });
-          doc.text(fmt(item.price),     167,    y, { align: 'right' });
-          doc.text(fmt(q * item.price), rm - 1, y, { align: 'right' });
-          y += 6;
-          if (y > 260) { doc.addPage(); y = 20; rowAlt = false; }
-        }
-      }
-
-      // ── Totals ──
-      y += 4;
-      var tx = rm - 72;
-      doc.setDrawColor(220, 220, 220); doc.setLineWidth(0.3);
-      doc.line(tx, y, rm, y); y += 5;
-      doc.setFont(F, 'normal'); doc.setFontSize(9); doc.setTextColor(cMuted[0], cMuted[1], cMuted[2]);
-      doc.text('ჯამი',            tx + 2, y); doc.text(fmt(t.sub),   rm - 1, y, { align: 'right' }); y += 5;
-      doc.text('მომსახურება 10%', tx + 2, y); doc.text(fmt(t.svc),   rm - 1, y, { align: 'right' }); y += 2;
-      doc.setDrawColor(cGold[0], cGold[1], cGold[2]); doc.setLineWidth(0.5);
-      doc.line(tx, y, rm, y); y += 5;
-      doc.setFont(F, 'bold'); doc.setFontSize(11); doc.setTextColor(cInk[0], cInk[1], cInk[2]);
-      doc.text('მთლიანად',        tx + 2, y); doc.text(fmt(t.grand), rm - 1, y, { align: 'right' }); y += 10;
-
-      // ── Footer ──
-      doc.setDrawColor(226, 217, 204); doc.setLineWidth(0.3);
-      doc.line(lm, y, rm, y); y += 5;
-      doc.setFont(F, 'normal'); doc.setFontSize(8); doc.setTextColor(cMuted[0], cMuted[1], cMuted[2]);
-      doc.text('ფასები მოიცავს დღგ-ს 18%', 105, y, { align: 'center' }); y += 4.5;
-      doc.text('თეორია დაინინგი, პუშკინის ქ. 23, თბილისი, ტელ.: 595-88-88-23', 105, y, { align: 'center' });
-
-      // ── Share or download ──
-      var pdfBlob = doc.output('blob');
-      var fileName = 'Order-' + guestName.replace(/\s+/g, '-') + '-' + dt.date + '.pdf';
-
-      if (navigator.share && navigator.canShare) {
-        var file = new File([pdfBlob], fileName, { type: 'application/pdf' });
-        if (navigator.canShare({ files: [file] })) {
-          navigator.share({
-            files: [file],
-            title: MENU_DATA.restaurantName + ' - Order',
-            text: 'Order for ' + guestName
-          }).then(function() {
-            resetBtn();
-          }).catch(function(err) {
-            if (err.name !== 'AbortError') { triggerDownload(pdfBlob, fileName); }
-            resetBtn();
-          });
-          return;
-        }
-      }
-      triggerDownload(pdfBlob, fileName);
-      resetBtn();
-
-    } catch(e) {
-      console.error('PDF generation error:', e);
-      window.print();
-      resetBtn();
+  // Try Web Share API (Android Chrome 75+, iOS Safari 15+)
+  // This opens the native OS share sheet with WhatsApp, Telegram, Email etc.
+  if (navigator.share && navigator.canShare) {
+    var file = new File([html], fileName, { type: 'text/html' });
+    if (navigator.canShare({ files: [file] })) {
+      navigator.share({ files: [file], title: MENU_DATA.restaurantName + ' - შეკვეთა' })
+        .catch(function(e) { if (e.name !== 'AbortError') showReceiptPage(html); });
+      return;
     }
-  } // end buildAndSharePDF
+  }
 
-  // Fetch both font weights, then build PDF. If fetch fails, build without embedded font.
-  var fetchReg  = _cachedFontB64 ? Promise.resolve(_cachedFontB64.reg)  : fetchAsBase64(FONT_URL_REGULAR);
-  var fetchBold = _cachedFontB64 ? Promise.resolve(_cachedFontB64.bold) : fetchAsBase64(FONT_URL_BOLD);
+  // Fallback: write receipt into current tab — user taps the print/share button
+  showReceiptPage(html);
+}
 
-  Promise.all([fetchReg, fetchBold]).then(function(fonts) {
-    _cachedFontB64 = { reg: fonts[0], bold: fonts[1] };
-    buildAndSharePDF(fonts[0], fonts[1]);
-  }).catch(function(err) {
-    console.warn('Font fetch failed, building PDF without embedded font:', err);
-    buildAndSharePDF(null, null);
-  });
+function showReceiptPage(html) {
+  document.open();
+  document.write(html);
+  document.close();
 }
 
 function triggerDownload(blob, fileName) {
@@ -969,26 +877,26 @@ function init() {
     var guestName = (gel('guest-name').value || '').trim() || 'Guest';
     var guests    = gel('guest-count').value;
     var dt        = getNow();
-    var rows      = buildRows();
+    saveState();
+    var rows = buildRows();
+    var html = buildDesktopPage(guestName, guests, dt, t, rows);
 
     if (isDesktop()) {
-      // Desktop: open new tab → print dialog with Save as PDF option
+      // Desktop: open in new tab
       var win = window.open('', '_blank');
-      if (win) { win.document.open(); win.document.write(buildDesktopPage(guestName, guests, dt, t, rows)); win.document.close(); }
+      if (win) { win.document.open(); win.document.write(html); win.document.close(); }
     } else {
-      // Mobile: show order summary overlay, Send button generates PDF + share sheet
-      _orderData = { guestName: guestName, guests: guests, dt: dt, t: t };
-      var ob = gel('ov-body');
-      if (ob) ob.innerHTML = buildOverlayHTML(guestName, guests, dt, t, rows);
-      if (ov) { ov.className = 'show'; ov.scrollTop = 0; }
-      window.scrollTo(0, 0);
+      // Mobile: replace current page with receipt
+      // The receipt has one big Share button directly wired to window.print()
+      // which opens native iOS/Android share sheet on direct user tap
+      document.open(); document.write(html); document.close();
     }
   });
 
+  // ov-send kept for fallback but not shown in new flow
   if (os) os.addEventListener('click', function() {
-    if (_orderData) {
-      generateAndSharePDF(_orderData.guestName, _orderData.guests, _orderData.dt, _orderData.t);
-    }
+    if (!_orderData) return;
+    generateAndSharePDF(_orderData.guestName, _orderData.guests, _orderData.dt, _orderData.t);
   });
 
   if (oc) oc.addEventListener('click', function() { if (ov) ov.className = ''; });
