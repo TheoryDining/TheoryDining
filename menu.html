@@ -38,18 +38,6 @@ main { max-width:900px; margin:0 auto; padding:24px 16px 200px; }
 .val-msg.warn { background:rgba(192,57,43,.2); color:#F1948A; border:1px solid rgba(192,57,43,.4); }
 .confirm-btn { background:#C8952A; color:#fff; border:none; padding:12px 20px; border-radius:8px; font-family:'Noto Sans Georgian','DM Sans',sans-serif; font-size:.88rem; font-weight:500; cursor:pointer; white-space:nowrap; -webkit-tap-highlight-color:transparent; }
 .confirm-btn:disabled { background:#555; }
-#overlay { display:none; position:fixed; top:0; left:0; right:0; bottom:0; z-index:200; background:rgba(0,0,0,.55); overflow-y:auto; -webkit-overflow-scrolling:touch; }
-#overlay.show { display:block; }
-#ov-panel { background:#fff; margin:12px; border-radius:12px; overflow:hidden; }
-#ov-bar { background:#1A1410; padding:12px 16px; display:-webkit-flex; display:flex; -webkit-align-items:center; align-items:center; -webkit-justify-content:space-between; justify-content:space-between; gap:8px; -webkit-flex-wrap:wrap; flex-wrap:wrap; }
-#ov-bar span { color:#aaa; font-size:.75rem; text-transform:uppercase; letter-spacing:.05em; }
-.ov-btn { border:none; padding:9px 16px; border-radius:6px; font-family:'Noto Sans Georgian','DM Sans',sans-serif; font-size:.82rem; font-weight:500; cursor:pointer; -webkit-tap-highlight-color:transparent; white-space:nowrap; }
-.ov-btn.send-btn { background:#C8952A; color:#fff; }
-.ov-btn.send-btn:disabled { background:#777; }
-.ov-btn.close-btn { background:#333; color:#ccc; }
-#ov-body { padding:22px 18px 18px; font-size:12px; color:#1A1410; }
-#ov-footer { padding:12px 16px 16px; display:flex; justify-content:center; }
-#ov-footer .send-btn { width:100%; font-size:1rem; padding:14px; border-radius:8px; }
 .rc-head { text-align:center; border-bottom:2px solid #C8952A; padding-bottom:12px; margin-bottom:14px; }
 .rc-head h2 { font-family:'Noto Sans Georgian','Playfair Display',serif; font-size:20px; }
 .rc-head p { color:#8B7355; font-size:8px; text-transform:uppercase; letter-spacing:.1em; margin-top:2px; }
@@ -72,13 +60,6 @@ main { max-width:900px; margin:0 auto; padding:24px 16px 200px; }
 .rc-ti .svc-r td { border-top:1px solid #ddd; color:#555; }
 .rc-ti .gnd-r td { border-top:2px solid #C8952A; font-family:'Noto Sans Georgian','Playfair Display',serif; font-size:13px; font-weight:700; padding-top:6px; }
 .rc-foot { border-top:1px solid #E2D9CC; padding-top:9px; text-align:center; font-size:8.5px; color:#8B7355; line-height:1.8; }
-</style>
-<style media="print">
-* { -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
-#open-banner, header, .info-bar, .footer-bar, main { display:none !important; }
-#overlay { display:block !important; position:static !important; background:none !important; overflow:visible !important; }
-#ov-panel { margin:0 !important; border-radius:0 !important; }
-#ov-bar { display:none !important; }
 </style>
 </head>
 <body>
@@ -119,19 +100,6 @@ main { max-width:900px; margin:0 auto; padding:24px 16px 200px; }
     <div class="val-msg" id="val-msg">Add items to begin</div>
   </div>
   <button class="confirm-btn" id="confirm-btn" disabled>ნახეთ შეკვეთა და გადააგზავნეთ</button>
-</div>
-
-<div id="overlay">
-  <div id="ov-panel">
-    <div id="ov-bar">
-      <span>შეკვეთა</span>
-      <button class="ov-btn close-btn" id="ov-close">&#10005; დახურვა და შეცვლა</button>
-    </div>
-    <div id="ov-body"></div>
-    <div id="ov-footer">
-      <button class="ov-btn send-btn" id="ov-send">&#128228; გაგზავნა / PDF შენახვა</button>
-    </div>
-  </div>
 </div>
 
 <script>
@@ -722,13 +690,11 @@ function buildDesktopPage(guestName, guests, dt, t, rows) {
     '*{margin:0;padding:0;box-sizing:border-box;}',
     'body{font-family:\'Noto Sans Georgian\',Georgia,sans-serif;color:#1A1410;background:#FAF7F2;}',
     '.page{background:#fff;max-width:700px;margin:0 auto;}',
-    /* Toolbar — always visible, not hidden on print */
     '.toolbar{background:#1A1410;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;gap:10px;position:sticky;top:0;z-index:10;}',
-    '.toolbar span{color:#aaa;font-size:.75rem;letter-spacing:.04em;}',
     '.back-btn{background:transparent;color:#aaa;border:1px solid #555;padding:10px 16px;border-radius:8px;font-family:\'Noto Sans Georgian\',Georgia,sans-serif;font-size:.9rem;cursor:pointer;}',
+    '.pdf-btn{background:#C8952A;color:#fff;border:none;padding:12px 22px;border-radius:8px;font-family:\'Noto Sans Georgian\',Georgia,sans-serif;font-size:1rem;font-weight:600;cursor:pointer;}',
+    /* On desktop hide back button; on mobile keep both */
     '@media (hover:hover) and (pointer:fine) and (min-width:900px){.back-btn{display:none;}}',
-    /* Big share button — easy to tap on mobile */
-    '.tb-btn{background:#C8952A;color:#fff;border:none;padding:12px 24px;border-radius:8px;font-family:\'Noto Sans Georgian\',Georgia,sans-serif;font-size:1rem;font-weight:600;cursor:pointer;white-space:nowrap;}',
     '.receipt{padding:24px 20px;}',
     'h1{font-size:22px;letter-spacing:.03em;text-align:center;}',
     '.tag{font-size:8px;text-transform:uppercase;letter-spacing:.14em;color:#8B7355;margin-top:2px;margin-bottom:10px;text-align:center;}',
@@ -755,15 +721,23 @@ function buildDesktopPage(guestName, guests, dt, t, rows) {
     '@media print{',
     '  *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;}',
     '  body{background:#fff;}',
-    '  .toolbar{display:none;}',
+    '  .toolbar{display:none!important;}',
     '  .page{max-width:100%;}',
     '  @page{margin:10mm;size:A4;}',
     '}'
   ].join('');
 
+  // Detect platform for button label
+  var ua = navigator.userAgent || '';
+  var isIOS = /iPad|iPhone|iPod/.test(ua);
+  var isAndroid = /Android/.test(ua);
+  var btnLabel = isIOS ? '📤 PDF შენახვა / გაგზავნა'
+               : isAndroid ? '📄 PDF შენახვა'
+               : '🖨 PDF სახით შენახვა';
+
   var toolbar = '<div class="toolbar">'
-    + '<button class="back-btn" onclick="history.back()">← მენიუზე დაბრუნება</button>'
-    + '<button class="tb-btn" onclick="window.print()">📤 შენახვა / გაგზავნა</button>'
+    + '<button class="back-btn" onclick="history.back()">← უკან</button>'
+    + '<button class="pdf-btn" onclick="window.print()">' + btnLabel + '</button>'
     + '</div>';
 
   var receipt = '<div class="receipt">'
@@ -860,17 +834,11 @@ function init() {
   var gc = gel('guest-count');
   var gn = gel('guest-name');
   var cb = gel('confirm-btn');
-  var os = gel('ov-send');
-  var oc = gel('ov-close');
-  var ov = gel('overlay');
 
   if (gc) gc.addEventListener('input', function() { saveState(); updateFooter(); });
   if (msg) msg.style.cursor = 'pointer';
   if (msg) msg.addEventListener('click', function() { var gn2 = gel('guest-name'); if (gn2) { gn2.focus(); gn2.scrollIntoView({ behavior: 'smooth', block: 'center' }); } });
   if (gn) gn.addEventListener('input', function() { saveState(); updateFooter(); });
-
-  // Store current order data so the Send button can access it
-  var _orderData = null;
 
   if (cb) cb.addEventListener('click', function() {
     var t         = calcTotals();
@@ -880,27 +848,8 @@ function init() {
     saveState();
     var rows = buildRows();
     var html = buildDesktopPage(guestName, guests, dt, t, rows);
-
-    if (isDesktop()) {
-      // Desktop: open in new tab
-      var win = window.open('', '_blank');
-      if (win) { win.document.open(); win.document.write(html); win.document.close(); }
-    } else {
-      // Mobile: replace current page with receipt
-      // The receipt has one big Share button directly wired to window.print()
-      // which opens native iOS/Android share sheet on direct user tap
-      document.open(); document.write(html); document.close();
-    }
+    document.open(); document.write(html); document.close();
   });
-
-  // ov-send kept for fallback but not shown in new flow
-  if (os) os.addEventListener('click', function() {
-    if (!_orderData) return;
-    generateAndSharePDF(_orderData.guestName, _orderData.guests, _orderData.dt, _orderData.t);
-  });
-
-  if (oc) oc.addEventListener('click', function() { if (ov) ov.className = ''; });
-  if (ov) ov.addEventListener('click', function(e) { if ((e.target || e.srcElement) === this) this.className = ''; });
 
   buildMenu();
 }
